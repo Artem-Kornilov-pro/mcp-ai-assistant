@@ -150,12 +150,25 @@ def _map_tool_name(name: str) -> str:
         "read_github_repository": "github__get_file",
         "read_github_file": "github__get_file",
         "get_file": "github__get_file",
+        "get_issue": "github__list_issues",
         "list_repos": "github__list_repos",
+        "get_repo_info": "github__get_repo_info",
+        "create_repo": "github__create_repo",
+        "list_directory": "github__list_directory",
+        "create_or_update_file": "github__create_or_update_file",
         "create_issue": "github__create_issue",
+        "list_issues": "github__list_issues",
+        "update_issue": "github__update_issue",
+        "create_pull_request": "github__create_pull_request",
+        "list_pull_requests": "github__list_pull_requests",
+        "merge_pull_request": "github__merge_pull_request",
         "search_code": "github__search_code",
+        "search_repos": "github__search_repos",
+        "list_branches": "github__list_branches",
+        "create_branch": "github__create_branch",
+        "list_commits": "github__list_commits",
         "read_file": "filesystem__read_file",
         "write_file": "filesystem__write_file",
-        "list_directory": "filesystem__list_directory",
         "search_files": "filesystem__search_files",
     }
     return mapping.get(name, name)
@@ -205,28 +218,100 @@ async def run_async() -> None:
     )
 
     # Register github tools
-    from servers.github import create_issue, get_file, list_repos, search_code
+    from servers.github import (
+        create_branch,
+        create_issue,
+        create_or_update_file,
+        create_pull_request,
+        create_repo,
+        get_file,
+        get_repo_info,
+        list_branches,
+        list_commits,
+        list_directory,
+        list_issues,
+        list_pull_requests,
+        list_repos,
+        merge_pull_request,
+        search_code,
+        search_repos,
+        update_issue,
+    )
 
     manager.register_tool(
-        "github__list_repos",
-        "List all repositories for the authenticated user",
-        list_repos,
+        "github__list_repos", "List all repositories for the authenticated user", list_repos
     )
     manager.register_tool(
-        "github__create_issue",
-        "Create a new issue in a GitHub repository. Args: repo (full name), title, body",
-        create_issue,
+        "github__get_repo_info",
+        "Get detailed info about a repository: description, stars, language, topics",
+        get_repo_info,
     )
     manager.register_tool(
-        "github__search_code",
-        "Search for code in GitHub repositories. Args: query, repo (optional)",
-        search_code,
+        "github__create_repo",
+        "Create a new GitHub repository. Args: name, description (optional), private (optional bool)",
+        create_repo,
     )
     manager.register_tool(
         "github__get_file",
-        """Get contents of a file from a GitHub repository.
-        Args: repo (like 'user/repo'), path (file path inside repo)""",
+        "Get contents of a file from a repo. Args: repo, path, branch (optional)",
         get_file,
+    )
+    manager.register_tool(
+        "github__list_directory",
+        "List contents of a directory in a repo. Args: repo, path (optional), branch (optional)",
+        list_directory,
+    )
+    manager.register_tool(
+        "github__create_or_update_file",
+        "Create or update a file in a repo. Args: repo, path, content, message, branch (optional)",
+        create_or_update_file,
+    )
+    manager.register_tool(
+        "github__create_issue",
+        "Create a new issue. Args: repo, title, body (optional), labels (optional list)",
+        create_issue,
+    )
+    manager.register_tool(
+        "github__list_issues",
+        "List issues in a repo. Args: repo, state (optional: open/closed/all)",
+        list_issues,
+    )
+    manager.register_tool(
+        "github__update_issue",
+        "Update an issue. Args: repo, issue_number, title (optional), body (optional), state (optional)",
+        update_issue,
+    )
+    manager.register_tool(
+        "github__create_pull_request",
+        "Create a PR. Args: repo, title, head (source branch), base (target, default main), body",
+        create_pull_request,
+    )
+    manager.register_tool(
+        "github__list_pull_requests",
+        "List PRs in a repo. Args: repo, state (optional)",
+        list_pull_requests,
+    )
+    manager.register_tool(
+        "github__merge_pull_request",
+        "Merge a PR. Args: repo, pull_number, method (merge/squash/rebase)",
+        merge_pull_request,
+    )
+    manager.register_tool(
+        "github__search_code", "Search code on GitHub. Args: query, repo (optional)", search_code
+    )
+    manager.register_tool("github__search_repos", "Search repositories. Args: query", search_repos)
+    manager.register_tool(
+        "github__list_branches", "List branches in a repo. Args: repo", list_branches
+    )
+    manager.register_tool(
+        "github__create_branch",
+        "Create a new branch. Args: repo, branch_name, from_branch (default main)",
+        create_branch,
+    )
+    manager.register_tool(
+        "github__list_commits",
+        "List recent commits. Args: repo, per_page (optional), branch (optional)",
+        list_commits,
     )
 
     all_tools = manager.get_tools_for_openai()
@@ -269,7 +354,7 @@ async def run_async() -> None:
             continue
 
         try:
-            max_tool_rounds = 5
+            max_tool_rounds = 15
             for _ in range(max_tool_rounds):
                 print("  🤔 Thinking...", end="", flush=True)
                 response = client.chat(messages)
