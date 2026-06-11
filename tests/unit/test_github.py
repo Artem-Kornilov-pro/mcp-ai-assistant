@@ -30,7 +30,7 @@ class TestListRepos:
         mock = MagicMock(return_value=[])
         with patch("servers.github._request", mock):
             list_repos()
-            mock.assert_called_once_with("GET", "/user/repos?per_page=100&sort=updated")
+            mock.assert_called_once_with("GET", "/user/repos?per_page=30&sort=updated&type=all")
 
 
 class TestCreateIssue:
