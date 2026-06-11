@@ -5,6 +5,7 @@ from typing import Any
 
 import httpx
 from openai import OpenAI
+from openai.types.responses import EasyInputMessageParam
 
 
 class LLMError(Exception):
@@ -75,13 +76,16 @@ class LLMClient:
         """
         last_error: Exception | None = None
 
+        # Convert to OpenAI SDK expected type
+        typed_messages = [EasyInputMessageParam(**msg) for msg in messages]
+
         for attempt in range(1, self.MAX_RETRIES + 1):
             try:
                 response = self._client.responses.create(
                     model=self.model_uri,
                     temperature=self._temperature,
                     instructions="",
-                    input=messages,
+                    input=typed_messages,
                     max_output_tokens=self._max_tokens,
                 )
                 return response.output_text
@@ -112,4 +116,6 @@ class LLMClient:
 
                 raise LLMError(f"LLM API error: {exc}") from exc
 
-        raise LLMTimeoutError(f"Request timed out after {self.MAX_RETRIES} retries") from last_error
+        raise LLMTimeoutError(
+            f"Request timed out after {self.MAX_RETRIES} retries"
+        ) from last_error
