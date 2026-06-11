@@ -20,12 +20,13 @@ class TestHandleUserInput:
         from src.main import handle_user_input
 
         messages: list[dict[str, Any]] = [
+            {"role": "system", "content": "You are helpful."},
             {"role": "user", "content": "hello"},
             {"role": "assistant", "content": "hi"},
         ]
         result = handle_user_input("/clear", messages)
         assert result is True
-        assert messages == []
+        assert messages == [{"role": "system", "content": "You are helpful."}]
 
     def test_help_command(self) -> None:
         from src.main import handle_user_input

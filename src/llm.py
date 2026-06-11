@@ -1,5 +1,6 @@
 """LLM client abstraction for Yandex Cloud (OpenAI-compatible API)."""
 
+import json
 import time
 from typing import Any
 
@@ -25,7 +26,7 @@ class LLMTimeoutError(LLMError):
 
 
 class LLMClient:
-    """Client for Yandex Cloud LLM with retry logic."""
+    """Client for Yandex Cloud LLM with retry logic and tool calling."""
 
     MAX_RETRIES: int = 3
     RETRY_DELAY: float = 2.0
@@ -64,42 +65,65 @@ class LLMClient:
         for msg in messages:
             role = msg.get("role", "user")
             content = msg.get("content", "")
-            if isinstance(content, str):
-                result.append(EasyInputMessageParam(role=role, content=content))
-            else:
-                result.append(EasyInputMessageParam(role=role, content=str(content)))
+            if not isinstance(content, str):
+                content = json.dumps(content, ensure_ascii=False)
+            result.append(EasyInputMessageParam(role=role, content=content))  # type: ignore[arg-type]
         return result
 
-    def chat(self, messages: list[dict[str, Any]]) -> str:
+    def chat(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """
-        Send messages to LLM and return response text.
+        Send messages to LLM and return response with optional tool calls.
 
         Args:
             messages: List of message dicts with 'role' and 'content' keys.
+            tools: Optional list of tools in OpenAI function calling format.
 
         Returns:
-            Response text from the model.
-
-        Raises:
-            LLMAuthError: Invalid API key.
-            LLMRateLimitError: Rate limit hit after retries.
-            LLMTimeoutError: Request timed out.
-            LLMError: Other API errors.
+            Dict with 'content' (str) and 'tool_calls' (list) keys.
         """
         last_error: Exception | None = None
 
         typed_input = self._build_input(messages)
 
+        create_kwargs: dict[str, Any] = {
+            "model": self.model_uri,
+            "temperature": self._temperature,
+            "instructions": "",
+            "input": typed_input,
+            "max_output_tokens": self._max_tokens,
+        }
+
+        if tools:
+            create_kwargs["tools"] = tools
+
         for attempt in range(1, self.MAX_RETRIES + 1):
             try:
-                response = self._client.responses.create(
-                    model=self.model_uri,
-                    temperature=self._temperature,
-                    instructions="",
-                    input=typed_input,  # type: ignore[arg-type]
-                    max_output_tokens=self._max_tokens,
-                )
-                return str(response.output_text)
+                response = self._client.responses.create(**create_kwargs)  # type: ignore[arg-type]
+
+                result: dict[str, Any] = {
+                    "content": response.output_text,
+                    "tool_calls": [],
+                }
+
+                # Extract tool calls from response
+                output = getattr(response, "output", [])
+                for item in output:
+                    if hasattr(item, "type") and item.type == "function_call":
+                        result["tool_calls"].append(
+                            {
+                                "id": getattr(item, "call_id", ""),
+                                "name": item.name,
+                                "arguments": json.loads(item.arguments)
+                                if isinstance(item.arguments, str)
+                                else item.arguments,
+                            }
+                        )
+
+                return result
 
             except httpx.TimeoutException as exc:
                 last_error = exc
