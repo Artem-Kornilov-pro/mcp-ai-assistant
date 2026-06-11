@@ -18,4 +18,4 @@ run:
 
 clean:
 	rm -rf __pycache__ .pytest_cache .mypy_cache .ruff_cache
-	rm -rf src/__pycache__ tests/__pycache__ servers/__pycache__
+	rm -rf src/__pycache__ tests/__pycache__ tests/unit/__pycache__ servers/__pycache__
