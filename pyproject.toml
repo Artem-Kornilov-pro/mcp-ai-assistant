@@ -6,8 +6,6 @@ build-backend = "hatchling.build"
 name = "mcp-ai-assistant"
 version = "0.1.0"
 description = "Personal AI assistant powered by LLM and MCP servers"
-readme = "README.md"
-license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "fastmcp>=2.0.0",
