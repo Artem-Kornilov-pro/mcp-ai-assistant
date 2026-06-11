@@ -248,22 +248,24 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "github__create_repo",
-        "Create a new GitHub repository. Args: name, description (optional), private (optional bool)",
+        "Create a new GitHub repository."
+        "Args: name, description (optional), private (optional bool)",
         create_repo,
     )
     manager.register_tool(
         "github__get_file",
-        "Get contents of a file from a repo. Args: repo, path, branch (optional)",
+        "Get contents of a file from a repo." "Args: repo, path, branch (optional)",
         get_file,
     )
     manager.register_tool(
         "github__list_directory",
-        "List contents of a directory in a repo. Args: repo, path (optional), branch (optional)",
+        "List contents of a directory in a repo." "Args: repo, path (optional), branch (optional)",
         list_directory,
     )
     manager.register_tool(
         "github__create_or_update_file",
-        "Create or update a file in a repo. Args: repo, path, content, message, branch (optional)",
+        "Create or update a file in a repo."
+        "Args: repo, path, content, message, branch (optional)",
         create_or_update_file,
     )
     manager.register_tool(
@@ -278,12 +280,14 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "github__update_issue",
-        "Update an issue. Args: repo, issue_number, title (optional), body (optional), state (optional)",
+        "Update an issue. Args: repo, issue_number,"
+        " title (optional), body (optional), state (optional)",
         update_issue,
     )
     manager.register_tool(
         "github__create_pull_request",
-        "Create a PR. Args: repo, title, head (source branch), base (target, default main), body",
+        "Create a PR. Args: repo, title, head (source branch),"
+        " base (target, default main), body",
         create_pull_request,
     )
     manager.register_tool(
