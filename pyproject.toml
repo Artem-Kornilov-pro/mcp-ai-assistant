@@ -49,3 +49,7 @@ asyncio_mode = "auto"
 python_version = "3.12"
 strict = true
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "servers.*"
+disable_error_code = ["misc"]
