@@ -1,0 +1,1 @@
+"""MCP AI Assistant - Personal AI assistant powered by LLM and MCP servers."""
