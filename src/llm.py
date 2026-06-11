@@ -59,9 +59,7 @@ class LLMClient:
         """Full model URI for Yandex Cloud."""
         return f"gpt://{self._folder_id}/{self._model}"
 
-    def _build_input(
-        self, messages: list[dict[str, Any]]
-    ) -> Sequence[EasyInputMessageParam]:
+    def _build_input(self, messages: list[dict[str, Any]]) -> Sequence[EasyInputMessageParam]:
         """Convert raw message dicts to typed input for OpenAI SDK."""
         result: list[EasyInputMessageParam] = []
         for msg in messages:
@@ -99,10 +97,10 @@ class LLMClient:
                     model=self.model_uri,
                     temperature=self._temperature,
                     instructions="",
-                    input=typed_input,  # type: ignore[arg-type]
+                    input=typed_input,
                     max_output_tokens=self._max_tokens,
                 )
-                return response.output_text
+                return str(response.output_text)
 
             except httpx.TimeoutException as exc:
                 last_error = exc
@@ -130,7 +128,4 @@ class LLMClient:
 
                 raise LLMError(f"LLM API error: {exc}") from exc
 
-        raise LLMTimeoutError(
-            f"Request timed out after {self.MAX_RETRIES} retries"
-        ) from last_error
-    
+        raise LLMTimeoutError(f"Request timed out after {self.MAX_RETRIES} retries") from last_error
