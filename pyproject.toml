@@ -16,6 +16,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "gspread>=6.0.0",
     "google-auth>=2.0.0",
+    "pyjwt>=2.0.0",
 ]
 
 [project.optional-dependencies]
