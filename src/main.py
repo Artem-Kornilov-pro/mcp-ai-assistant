@@ -170,6 +170,9 @@ def _map_tool_name(name: str) -> str:
         "read_file": "filesystem__read_file",
         "write_file": "filesystem__write_file",
         "search_files": "filesystem__search_files",
+        "read_sheet": "googlesheets__read_sheet",
+        "write_sheet": "googlesheets__write_sheet",
+        "create_sheet": "googlesheets__create_sheet",
     }
     return mapping.get(name, name)
 
@@ -316,6 +319,26 @@ async def run_async() -> None:
         "github__list_commits",
         "List recent commits. Args: repo, per_page (optional), branch (optional)",
         list_commits,
+    )
+
+    from servers.google_sheets import create_sheet, read_sheet, write_sheet
+
+    manager.register_tool(
+        "googlesheets__read_sheet",
+        "Read values from a Google Sheet. "
+        "Args: spreadsheet_id (from URL), range_name (optional, e.g. 'A1:D10')",
+        read_sheet,
+    )
+    manager.register_tool(
+        "googlesheets__write_sheet",
+        "Write values to a Google Sheet. "
+        "Args: spreadsheet_id, range_name (e.g. 'Sheet1!A1'), values (list of rows)",
+        write_sheet,
+    )
+    manager.register_tool(
+        "googlesheets__create_sheet",
+        "Create a new Google Sheet. Args: title",
+        create_sheet,
     )
 
     all_tools = manager.get_tools_for_openai()
