@@ -67,18 +67,28 @@ def read_sheet(spreadsheet_id: str, range_name: str = "A1:Z100") -> list[list[st
 def write_sheet(
     spreadsheet_id: str,
     range_name: str,
-    values: list[list[str]],
+    values: str | list[list[str]],
 ) -> str:
     """Write values to a Google Sheet.
 
     Args:
         spreadsheet_id: The ID from the sheet URL.
         range_name: Cell range (e.g., "Sheet1!A1").
-        values: List of rows, each row is a list of cell values.
+        values: List of rows as JSON array, e.g. [["A1","B1"],["A2","B2"]].
 
     Returns:
         Confirmation with updated range.
     """
+    import json as _json
+
+    # Parse string to list if needed
+    if isinstance(values, str):
+        try:
+            values = _json.loads(values)
+        except _json.JSONDecodeError:
+            # Assume single value
+            values = [[values]]
+
     url = f"{SHEETS_API}/{spreadsheet_id}/values/{range_name}"
     params = {"valueInputOption": "USER_ENTERED"}
     body = {"values": values}
