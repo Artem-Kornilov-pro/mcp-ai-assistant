@@ -1,7 +1,6 @@
 """LLM client abstraction for Yandex Cloud (OpenAI-compatible API)."""
 
 import time
-from collections.abc import Sequence
 from typing import Any
 
 import httpx
@@ -59,7 +58,7 @@ class LLMClient:
         """Full model URI for Yandex Cloud."""
         return f"gpt://{self._folder_id}/{self._model}"
 
-    def _build_input(self, messages: list[dict[str, Any]]) -> Sequence[EasyInputMessageParam]:
+    def _build_input(self, messages: list[dict[str, Any]]) -> list[EasyInputMessageParam]:
         """Convert raw message dicts to typed input for OpenAI SDK."""
         result: list[EasyInputMessageParam] = []
         for msg in messages:
@@ -97,7 +96,7 @@ class LLMClient:
                     model=self.model_uri,
                     temperature=self._temperature,
                     instructions="",
-                    input=typed_input,
+                    input=typed_input,  # type: ignore[arg-type]
                     max_output_tokens=self._max_tokens,
                 )
                 return str(response.output_text)
