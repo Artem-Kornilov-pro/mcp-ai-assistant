@@ -99,4 +99,3 @@ def search_files(pattern: str) -> list[str]:
 
 if __name__ == "__main__":
     mcp.run()
-    

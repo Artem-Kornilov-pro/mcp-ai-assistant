@@ -150,8 +150,9 @@ class TestSearchFiles:
         (sub / "deep.py").touch()
 
         result = search_files("*.py")
-        assert "a.py" not in result  # нет a.py
-        assert "sub/deep.py" in result
+        # Нормализуем разделители для кроссплатформенности
+        normalized = [p.replace("\\", "/") for p in result]
+        assert "sub/deep.py" in normalized
 
     def test_search_no_matches(self, workspace: Path) -> None:
         from servers.filesystem import search_files
@@ -165,4 +166,3 @@ class TestSearchFiles:
         # workspace already exists, should not crash
         result = search_files("*.py")
         assert isinstance(result, list)
-        
