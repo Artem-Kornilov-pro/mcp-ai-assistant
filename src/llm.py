@@ -67,7 +67,7 @@ class LLMClient:
             content = msg.get("content", "")
             if not isinstance(content, str):
                 content = json.dumps(content, ensure_ascii=False)
-            result.append(EasyInputMessageParam(role=role, content=content))  # type: ignore[arg-type]
+            result.append(EasyInputMessageParam(role=role, content=content))
         return result
 
     def chat(
@@ -102,7 +102,7 @@ class LLMClient:
 
         for attempt in range(1, self.MAX_RETRIES + 1):
             try:
-                response = self._client.responses.create(**create_kwargs)  # type: ignore[arg-type]
+                response = self._client.responses.create(**create_kwargs)
 
                 result: dict[str, Any] = {
                     "content": response.output_text,

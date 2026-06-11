@@ -199,43 +199,116 @@ async def run_async() -> None:
     # Register filesystem tools
     from servers.filesystem import list_directory, read_file, search_files, write_file
 
-    manager.register_tool("filesystem__read_file", "Read contents of a file from the workspace. Args: path", read_file)
-    manager.register_tool("filesystem__write_file", "Write content to a file. Args: path, content", write_file)
-    manager.register_tool("filesystem__list_directory", "List files and directories. Args: path (default '.')", list_directory)
-    manager.register_tool("filesystem__search_files", "Search for files by pattern. Args: pattern (e.g. '*.py')", search_files)
+    manager.register_tool(
+        "filesystem__read_file", "Read contents of a file from the workspace. Args: path", read_file
+    )
+    manager.register_tool(
+        "filesystem__write_file", "Write content to a file. Args: path, content", write_file
+    )
+    manager.register_tool(
+        "filesystem__list_directory",
+        "List files and directories. Args: path (default '.')",
+        list_directory,
+    )
+    manager.register_tool(
+        "filesystem__search_files",
+        "Search for files by pattern. Args: pattern (e.g. '*.py')",
+        search_files,
+    )
 
     # Register github tools
     from servers.github import (
-        create_branch, create_issue, create_or_update_file, create_pull_request,
-        create_repo, get_file, get_repo_info, list_branches, list_commits,
-        list_directory as gh_list_directory, list_issues, list_pull_requests,
-        list_repos, merge_pull_request, search_code, search_repos, update_issue,
+        create_branch,
+        create_issue,
+        create_or_update_file,
+        create_pull_request,
+        create_repo,
+        get_file,
+        get_repo_info,
+        list_branches,
+        list_commits,
+        list_issues,
+        list_pull_requests,
+        list_repos,
+        merge_pull_request,
+        search_code,
+        search_repos,
+        update_issue,
+    )
+    from servers.github import (
+        list_directory as gh_list_directory,
     )
 
     manager.register_tool("github__list_repos", "List all repositories", list_repos)
-    manager.register_tool("github__get_repo_info", "Get repo info: description, stars, language", get_repo_info)
-    manager.register_tool("github__create_repo", "Create a new repo. Args: name, description, private", create_repo)
-    manager.register_tool("github__get_file", "Get file from repo. Args: repo, path, branch", get_file)
-    manager.register_tool("github__list_directory", "List directory in repo. Args: repo, path, branch", gh_list_directory)
-    manager.register_tool("github__create_or_update_file", "Create/update file. Args: repo, path, content, message, branch", create_or_update_file)
-    manager.register_tool("github__create_issue", "Create issue. Args: repo, title, body, labels", create_issue)
+    manager.register_tool(
+        "github__get_repo_info", "Get repo info: description, stars, language", get_repo_info
+    )
+    manager.register_tool(
+        "github__create_repo", "Create a new repo. Args: name, description, private", create_repo
+    )
+    manager.register_tool(
+        "github__get_file", "Get file from repo. Args: repo, path, branch", get_file
+    )
+    manager.register_tool(
+        "github__list_directory",
+        "List directory in repo. Args: repo, path, branch",
+        gh_list_directory,
+    )
+    manager.register_tool(
+        "github__create_or_update_file",
+        "Create/update file. Args: repo, path, content, message, branch",
+        create_or_update_file,
+    )
+    manager.register_tool(
+        "github__create_issue", "Create issue. Args: repo, title, body, labels", create_issue
+    )
     manager.register_tool("github__list_issues", "List issues. Args: repo, state", list_issues)
-    manager.register_tool("github__update_issue", "Update issue. Args: repo, issue_number, title, body, state", update_issue)
-    manager.register_tool("github__create_pull_request", "Create PR. Args: repo, title, head, base, body", create_pull_request)
-    manager.register_tool("github__list_pull_requests", "List PRs. Args: repo, state", list_pull_requests)
-    manager.register_tool("github__merge_pull_request", "Merge PR. Args: repo, pull_number, method", merge_pull_request)
+    manager.register_tool(
+        "github__update_issue",
+        "Update issue. Args: repo, issue_number, title, body, state",
+        update_issue,
+    )
+    manager.register_tool(
+        "github__create_pull_request",
+        "Create PR. Args: repo, title, head, base, body",
+        create_pull_request,
+    )
+    manager.register_tool(
+        "github__list_pull_requests", "List PRs. Args: repo, state", list_pull_requests
+    )
+    manager.register_tool(
+        "github__merge_pull_request",
+        "Merge PR. Args: repo, pull_number, method",
+        merge_pull_request,
+    )
     manager.register_tool("github__search_code", "Search code. Args: query, repo", search_code)
     manager.register_tool("github__search_repos", "Search repos. Args: query", search_repos)
     manager.register_tool("github__list_branches", "List branches. Args: repo", list_branches)
-    manager.register_tool("github__create_branch", "Create branch. Args: repo, branch_name, from_branch", create_branch)
-    manager.register_tool("github__list_commits", "List commits. Args: repo, per_page, branch", list_commits)
+    manager.register_tool(
+        "github__create_branch",
+        "Create branch. Args: repo, branch_name, from_branch",
+        create_branch,
+    )
+    manager.register_tool(
+        "github__list_commits", "List commits. Args: repo, per_page, branch", list_commits
+    )
 
     # Register google sheets tools
     from servers.google_sheets import create_sheet, read_sheet, write_sheet
 
-    manager.register_tool("googlesheets__read_sheet", "Read Google Sheet. Args: spreadsheet_id, range_name", read_sheet)
-    manager.register_tool("googlesheets__write_sheet", "Write to Google Sheet. Args: spreadsheet_id, range_name, values", write_sheet)
-    manager.register_tool("googlesheets__create_sheet", "Create Google Sheet. Args: title", create_sheet)
+    manager.register_tool(
+        "googlesheets__read_sheet",
+        "Read Google Sheet. Args: spreadsheet_id, range_name",
+        read_sheet,
+    )
+    manager.register_tool(
+        "googlesheets__write_sheet",
+        "Write to Google Sheet. Args: spreadsheet_id, range_name, values",
+        write_sheet,
+    )
+    manager.register_tool(
+        "googlesheets__create_sheet", "Create Google Sheet. Args: title", create_sheet
+    )
 
     all_tools = manager.get_tools_for_openai()
     print(f"  ✅ {len(all_tools)} tools loaded.\n")
@@ -300,17 +373,21 @@ async def run_async() -> None:
                     try:
                         result = await manager.call_tool(tool_name, tool_args)
                         print_tool_result(result)
-                        messages.append({
-                            "role": "user",
-                            "content": f"Tool result for {tool_name}:\n{result}",
-                        })
+                        messages.append(
+                            {
+                                "role": "user",
+                                "content": f"Tool result for {tool_name}:\n{result}",
+                            }
+                        )
                     except Exception as e:
                         error_msg = f"Error: {e}"
                         print(f"  ❌ {error_msg}")
-                        messages.append({
-                            "role": "user",
-                            "content": f"Tool error for {tool_name}: {error_msg}",
-                        })
+                        messages.append(
+                            {
+                                "role": "user",
+                                "content": f"Tool error for {tool_name}: {error_msg}",
+                            }
+                        )
 
             else:
                 print("  ⚠️  Max tool rounds reached.\n")
@@ -324,6 +401,7 @@ async def run_async() -> None:
 def run() -> None:
     """Entry point - runs the async chat loop."""
     asyncio.run(run_async())
+
 
 if __name__ == "__main__":
     run()
