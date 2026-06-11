@@ -1,6 +1,7 @@
 """LLM client abstraction for Yandex Cloud (OpenAI-compatible API)."""
 
 import time
+from collections.abc import Sequence
 from typing import Any
 
 import httpx
@@ -58,6 +59,20 @@ class LLMClient:
         """Full model URI for Yandex Cloud."""
         return f"gpt://{self._folder_id}/{self._model}"
 
+    def _build_input(
+        self, messages: list[dict[str, Any]]
+    ) -> Sequence[EasyInputMessageParam]:
+        """Convert raw message dicts to typed input for OpenAI SDK."""
+        result: list[EasyInputMessageParam] = []
+        for msg in messages:
+            role = msg.get("role", "user")
+            content = msg.get("content", "")
+            if isinstance(content, str):
+                result.append(EasyInputMessageParam(role=role, content=content))
+            else:
+                result.append(EasyInputMessageParam(role=role, content=str(content)))
+        return result
+
     def chat(self, messages: list[dict[str, Any]]) -> str:
         """
         Send messages to LLM and return response text.
@@ -76,8 +91,7 @@ class LLMClient:
         """
         last_error: Exception | None = None
 
-        # Convert to OpenAI SDK expected type
-        typed_messages = [EasyInputMessageParam(**msg) for msg in messages]
+        typed_input = self._build_input(messages)
 
         for attempt in range(1, self.MAX_RETRIES + 1):
             try:
@@ -85,7 +99,7 @@ class LLMClient:
                     model=self.model_uri,
                     temperature=self._temperature,
                     instructions="",
-                    input=typed_messages,
+                    input=typed_input,  # type: ignore[arg-type]
                     max_output_tokens=self._max_tokens,
                 )
                 return response.output_text
@@ -119,3 +133,4 @@ class LLMClient:
         raise LLMTimeoutError(
             f"Request timed out after {self.MAX_RETRIES} retries"
         ) from last_error
+    

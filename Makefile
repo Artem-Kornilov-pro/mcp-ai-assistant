@@ -1,10 +1,10 @@
-.PHONY: install test lint run clean
+.PHONY: install test lint type-check run clean
 
 install:
 	pip install -e ".[dev]"
 
 test:
-	pytest --cov=src --cov-report=term-missing
+	pytest tests/unit/ --cov=src --cov-report=term-missing
 
 lint:
 	ruff check .
@@ -12,6 +12,9 @@ lint:
 
 format:
 	ruff format .
+
+type-check:
+	mypy src/ tests/unit/
 
 run:
 	python -m src.main
