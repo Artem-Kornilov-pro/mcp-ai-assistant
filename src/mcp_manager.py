@@ -50,5 +50,18 @@ class MCPManager:
             raise ValueError(f"Tool not found: {tool_name}")
 
         func = self._tools[tool_name]["func"]
-        result = func(**arguments)
+        # Cast string numbers to int
+        casted_args: dict[str, Any] = {}
+        for key, value in arguments.items():
+            if isinstance(value, str) and value.lstrip("-").isdigit():
+                casted_args[key] = int(value)
+            elif isinstance(value, str) and value.replace(".", "", 1).lstrip("-").isdigit():
+                try:
+                    casted_args[key] = float(value)
+                except ValueError:
+                    casted_args[key] = value
+            else:
+                casted_args[key] = value
+
+        result = func(**casted_args)
         return str(result)

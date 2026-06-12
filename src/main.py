@@ -170,6 +170,11 @@ def _map_tool_name(name: str) -> str:
         "get_current_time": "datetime__get_current_time",
         "calculate_date": "datetime__calculate_date",
         "days_between": "datetime__days_between",
+        "get_day_of_week": "datetime__get_day_of_week",
+        "get_week_number": "datetime__get_week_number",
+        "format_date_ru": "datetime__format_date_ru",
+        "days_until": "datetime__days_until",
+        "is_weekend": "datetime__is_weekend",
         "execute_query": "sqlite__execute_query",
         "execute_statement": "sqlite__execute_statement",
         "list_tables": "sqlite__list_tables",
@@ -320,11 +325,21 @@ async def run_async() -> None:
         "weather__get_forecast", "Get weather forecast. Args: city, days (1-3)", get_forecast
     )
 
-    # Register datetime tools
-    from servers.datetime_tools import calculate_date, days_between, get_current_time
+    from servers.datetime_tools import (
+        calculate_date,
+        days_between,
+        days_until,
+        format_date_ru,
+        get_current_time,
+        get_day_of_week,
+        get_week_number,
+        is_weekend,
+    )
 
     manager.register_tool(
-        "datetime__get_current_time", "Get current date and time", get_current_time
+        "datetime__get_current_time",
+        "Get current date, time, day of week, week number, day of year",
+        get_current_time,
     )
     manager.register_tool(
         "datetime__calculate_date",
@@ -333,8 +348,23 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "datetime__days_between",
-        "Days between dates. Args: date1, date2 (YYYY-MM-DD)",
+        "Days between two dates. Args: date1, date2 (YYYY-MM-DD)",
         days_between,
+    )
+    manager.register_tool(
+        "datetime__get_day_of_week", "Get day of week for a date. Args: date_str", get_day_of_week
+    )
+    manager.register_tool(
+        "datetime__get_week_number", "Get ISO week number. Args: date_str", get_week_number
+    )
+    manager.register_tool(
+        "datetime__format_date_ru", "Format date in Russian. Args: date_str", format_date_ru
+    )
+    manager.register_tool(
+        "datetime__days_until", "Days until/after a date. Args: date_str", days_until
+    )
+    manager.register_tool(
+        "datetime__is_weekend", "Check if date is weekend. Args: date_str", is_weekend
     )
 
     # Register SQLite tools
