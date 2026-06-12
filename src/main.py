@@ -1,7 +1,6 @@
 """Terminal chat interface for MCP AI Assistant with tool calling."""
 
 import asyncio
-import json
 import re
 import sys
 from typing import Any
@@ -82,34 +81,6 @@ def parse_tool_calls(text: str) -> list[dict[str, Any]]:
     """Parse XML-style tool calls from model response text."""
     tool_calls: list[dict[str, Any]] = []
 
-    # Try JSON code blocks first
-    json_match = re.search(r"```json\s*(.*?)\s*```", text, re.DOTALL)
-    if json_match:
-        try:
-            data = json.loads(json_match.group(1))
-            if isinstance(data, dict):
-                tool_calls.append(
-                    {
-                        "name": data.get("name", data.get("tool", "")),
-                        "arguments": data.get("arguments", data.get("args", {})),
-                    }
-                )
-                return tool_calls
-            if isinstance(data, list):
-                for item in data:
-                    tool_calls.append(
-                        {
-                            "name": item.get("name", item.get("tool", "")),
-                            "arguments": item.get("arguments", item.get("args", {})),
-                        }
-                    )
-                return tool_calls
-        except json.JSONDecodeError:
-            pass
-
-    # Try XML-style
-    xml_match = re.findall(r"<(\w+)>(.*?)</\1>", text, re.DOTALL)
-    top_level_tags: set[str] = set()
     skip_tags = {
         "function",
         "owner",
@@ -125,21 +96,42 @@ def parse_tool_calls(text: str) -> list[dict[str, Any]]:
         "spreadsheet_id",
         "range_name",
         "body",
+        "city",
+        "days",
+        "date_str",
+        "date1",
+        "date2",
+        "statement",
+        "status",
+        "priority",
     }
-    for tag, _ in xml_match:
-        if tag.lower() not in skip_tags:
-            top_level_tags.add(tag)
 
-    for tool_name in top_level_tags:
+    # Find all XML tags: <tag>...</tag> and <tag/>
+    all_tags = re.findall(r"<(\w+)>([\s\S]*?)</\1>", text)
+    self_closing = re.findall(r"<(\w+)\s*/>", text)
+
+    found_tools: set[str] = set()
+
+    for tag in self_closing:
+        if tag.lower() not in skip_tags:
+            found_tools.add(tag)
+
+    for tag, body in all_tags:
+        if tag.lower() in skip_tags:
+            continue
+        found_tools.add(tag)
+
+    for tool_name in found_tools:
+        args: dict[str, Any] = {}
         pattern = rf"<{tool_name}>(.*?)</{tool_name}>"
         matches = re.findall(pattern, text, re.DOTALL)
         for body in matches:
-            args: dict[str, Any] = {}
-            child_tags = re.findall(r"<(\w+)>(.*?)</\1>", body, re.DOTALL)
-            for child_name, child_value in child_tags:
-                args[child_name] = child_value.strip()
-            if args:
-                tool_calls.append({"name": tool_name, "arguments": args})
+            if body.strip():
+                child_tags = re.findall(r"<(\w+)>(.*?)</\1>", body, re.DOTALL)
+                for child_name, child_value in child_tags:
+                    args[child_name] = child_value.strip()
+
+        tool_calls.append({"name": tool_name, "arguments": args})
 
     return tool_calls
 
@@ -173,6 +165,25 @@ def _map_tool_name(name: str) -> str:
         "read_sheet": "googlesheets__read_sheet",
         "write_sheet": "googlesheets__write_sheet",
         "create_sheet": "googlesheets__create_sheet",
+        "get_weather": "weather__get_weather",
+        "get_temperature": "weather__get_temperature",
+        "get_forecast": "weather__get_forecast",
+        "get_wind": "weather__get_wind",
+        "get_humidity": "weather__get_humidity",
+        "get_astronomy": "weather__get_astronomy",
+        "get_weather_ascii": "weather__get_weather_ascii",
+        "compare_weather": "weather__compare_weather",
+        "get_current_time": "datetime__get_current_time",
+        "calculate_date": "datetime__calculate_date",
+        "days_between": "datetime__days_between",
+        "get_day_of_week": "datetime__get_day_of_week",
+        "get_week_number": "datetime__get_week_number",
+        "format_date_ru": "datetime__format_date_ru",
+        "days_until": "datetime__days_until",
+        "is_weekend": "datetime__is_weekend",
+        "execute_query": "sqlite__execute_query",
+        "execute_statement": "sqlite__execute_statement",
+        "list_tables": "sqlite__list_tables",
     }
     return mapping.get(name, name)
 
@@ -309,6 +320,98 @@ async def run_async() -> None:
     manager.register_tool(
         "googlesheets__create_sheet", "Create Google Sheet. Args: title", create_sheet
     )
+
+    # Register weather tools
+    from servers.weather import (
+        compare_weather,
+        get_astronomy,
+        get_forecast,
+        get_humidity,
+        get_temperature,
+        get_weather,
+        get_weather_ascii,
+        get_wind,
+    )
+
+    manager.register_tool(
+        "weather__get_weather",
+        "Current weather: temperature, wind, humidity. Args: city",
+        get_weather,
+    )
+    manager.register_tool(
+        "weather__get_temperature", "Current temperature in °C. Args: city", get_temperature
+    )
+    manager.register_tool(
+        "weather__get_forecast", "3-day forecast in °C. Args: city, days (1-3)", get_forecast
+    )
+    manager.register_tool("weather__get_wind", "Wind speed and direction. Args: city", get_wind)
+    manager.register_tool("weather__get_humidity", "Humidity percentage. Args: city", get_humidity)
+    manager.register_tool(
+        "weather__get_astronomy", "Sunrise, sunset, moon phase. Args: city", get_astronomy
+    )
+    manager.register_tool(
+        "weather__get_weather_ascii", "Visual ASCII weather chart. Args: city", get_weather_ascii
+    )
+    manager.register_tool(
+        "weather__compare_weather",
+        "Compare weather of two cities. Args: city1, city2",
+        compare_weather,
+    )
+
+    from servers.datetime_tools import (
+        calculate_date,
+        days_between,
+        days_until,
+        format_date_ru,
+        get_current_time,
+        get_day_of_week,
+        get_week_number,
+        is_weekend,
+    )
+
+    manager.register_tool(
+        "datetime__get_current_time",
+        "Get current date, time, day of week, week number, day of year",
+        get_current_time,
+    )
+    manager.register_tool(
+        "datetime__calculate_date",
+        "Add/subtract days. Args: date_str (YYYY-MM-DD), days",
+        calculate_date,
+    )
+    manager.register_tool(
+        "datetime__days_between",
+        "Days between two dates. Args: date1, date2 (YYYY-MM-DD)",
+        days_between,
+    )
+    manager.register_tool(
+        "datetime__get_day_of_week", "Get day of week for a date. Args: date_str", get_day_of_week
+    )
+    manager.register_tool(
+        "datetime__get_week_number", "Get ISO week number. Args: date_str", get_week_number
+    )
+    manager.register_tool(
+        "datetime__format_date_ru", "Format date in Russian. Args: date_str", format_date_ru
+    )
+    manager.register_tool(
+        "datetime__days_until", "Days until/after a date. Args: date_str", days_until
+    )
+    manager.register_tool(
+        "datetime__is_weekend", "Check if date is weekend. Args: date_str", is_weekend
+    )
+
+    # Register SQLite tools
+    from servers.sqlite_server import execute_query, execute_statement, list_tables
+
+    manager.register_tool(
+        "sqlite__execute_query", "Execute SELECT query. Args: query", execute_query
+    )
+    manager.register_tool(
+        "sqlite__execute_statement",
+        "Execute INSERT/UPDATE/DELETE/CREATE. Args: statement",
+        execute_statement,
+    )
+    manager.register_tool("sqlite__list_tables", "List all tables in the database", list_tables)
 
     all_tools = manager.get_tools_for_openai()
     print(f"  ✅ {len(all_tools)} tools loaded.\n")
