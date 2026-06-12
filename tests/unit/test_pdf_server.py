@@ -56,4 +56,3 @@ class TestPDF:
 
         with pytest.raises(PermissionError, match="Access denied"):
             read_pdf("../outside.pdf")
-            

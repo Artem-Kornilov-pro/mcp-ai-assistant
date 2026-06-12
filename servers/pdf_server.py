@@ -19,12 +19,12 @@ def _get_font_path() -> Path | None:
         return _FONT_PATH
 
     candidates = [
-        Path("C:/Windows/Fonts/arial.ttf"),           # Windows (Arial)
-        Path("C:/Windows/Fonts/DejaVuSans.ttf"),      # Windows (DejaVu if present)
+        Path("C:/Windows/Fonts/arial.ttf"),  # Windows (Arial)
+        Path("C:/Windows/Fonts/DejaVuSans.ttf"),  # Windows (DejaVu if present)
         Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),  # Linux
         Path("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),  # Linux alt
-        Path("/Library/Fonts/Arial.ttf"),             # macOS
-        Path("/Library/Fonts/DejaVuSans.ttf"),        # macOS alt
+        Path("/Library/Fonts/Arial.ttf"),  # macOS
+        Path("/Library/Fonts/DejaVuSans.ttf"),  # macOS alt
     ]
 
     for fp in candidates:
@@ -151,4 +151,3 @@ def create_pdf(path: str, text: str, title: str = "Document") -> str:
 
 if __name__ == "__main__":
     mcp.run()
-    

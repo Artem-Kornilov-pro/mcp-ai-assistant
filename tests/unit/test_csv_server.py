@@ -56,4 +56,3 @@ class TestCSV:
         assert "Alice" in result
         assert "30" in result
         assert '"Name"' in result
-        

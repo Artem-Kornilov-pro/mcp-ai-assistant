@@ -60,4 +60,3 @@ class TestExcel:
         result = read_excel("out.xlsx")
         assert "1" in result
         assert "2" in result
-        
