@@ -1,7 +1,6 @@
 """Terminal chat interface for MCP AI Assistant with tool calling."""
 
 import asyncio
-import json
 import re
 import sys
 from typing import Any
@@ -82,34 +81,6 @@ def parse_tool_calls(text: str) -> list[dict[str, Any]]:
     """Parse XML-style tool calls from model response text."""
     tool_calls: list[dict[str, Any]] = []
 
-    # Try JSON code blocks first
-    json_match = re.search(r"```json\s*(.*?)\s*```", text, re.DOTALL)
-    if json_match:
-        try:
-            data = json.loads(json_match.group(1))
-            if isinstance(data, dict):
-                tool_calls.append(
-                    {
-                        "name": data.get("name", data.get("tool", "")),
-                        "arguments": data.get("arguments", data.get("args", {})),
-                    }
-                )
-                return tool_calls
-            if isinstance(data, list):
-                for item in data:
-                    tool_calls.append(
-                        {
-                            "name": item.get("name", item.get("tool", "")),
-                            "arguments": item.get("arguments", item.get("args", {})),
-                        }
-                    )
-                return tool_calls
-        except json.JSONDecodeError:
-            pass
-
-    # Try XML-style
-    xml_match = re.findall(r"<(\w+)>(.*?)</\1>", text, re.DOTALL)
-    top_level_tags: set[str] = set()
     skip_tags = {
         "function",
         "owner",
@@ -125,21 +96,42 @@ def parse_tool_calls(text: str) -> list[dict[str, Any]]:
         "spreadsheet_id",
         "range_name",
         "body",
+        "city",
+        "days",
+        "date_str",
+        "date1",
+        "date2",
+        "statement",
+        "status",
+        "priority",
     }
-    for tag, _ in xml_match:
-        if tag.lower() not in skip_tags:
-            top_level_tags.add(tag)
 
-    for tool_name in top_level_tags:
+    # Find all XML tags: <tag>...</tag> and <tag/>
+    all_tags = re.findall(r"<(\w+)>([\s\S]*?)</\1>", text)
+    self_closing = re.findall(r"<(\w+)\s*/>", text)
+
+    found_tools: set[str] = set()
+
+    for tag in self_closing:
+        if tag.lower() not in skip_tags:
+            found_tools.add(tag)
+
+    for tag, body in all_tags:
+        if tag.lower() in skip_tags:
+            continue
+        found_tools.add(tag)
+
+    for tool_name in found_tools:
+        args: dict[str, Any] = {}
         pattern = rf"<{tool_name}>(.*?)</{tool_name}>"
         matches = re.findall(pattern, text, re.DOTALL)
         for body in matches:
-            args: dict[str, Any] = {}
-            child_tags = re.findall(r"<(\w+)>(.*?)</\1>", body, re.DOTALL)
-            for child_name, child_value in child_tags:
-                args[child_name] = child_value.strip()
-            if args:
-                tool_calls.append({"name": tool_name, "arguments": args})
+            if body.strip():
+                child_tags = re.findall(r"<(\w+)>(.*?)</\1>", body, re.DOTALL)
+                for child_name, child_value in child_tags:
+                    args[child_name] = child_value.strip()
+
+        tool_calls.append({"name": tool_name, "arguments": args})
 
     return tool_calls
 
