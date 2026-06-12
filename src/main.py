@@ -173,6 +173,14 @@ def _map_tool_name(name: str) -> str:
         "read_sheet": "googlesheets__read_sheet",
         "write_sheet": "googlesheets__write_sheet",
         "create_sheet": "googlesheets__create_sheet",
+        "get_weather": "weather__get_weather",
+        "get_forecast": "weather__get_forecast",
+        "get_current_time": "datetime__get_current_time",
+        "calculate_date": "datetime__calculate_date",
+        "days_between": "datetime__days_between",
+        "execute_query": "sqlite__execute_query",
+        "execute_statement": "sqlite__execute_statement",
+        "list_tables": "sqlite__list_tables",
     }
     return mapping.get(name, name)
 
@@ -309,6 +317,46 @@ async def run_async() -> None:
     manager.register_tool(
         "googlesheets__create_sheet", "Create Google Sheet. Args: title", create_sheet
     )
+
+    # Register weather tools
+    from servers.weather import get_forecast, get_weather
+
+    manager.register_tool(
+        "weather__get_weather", "Get current weather for a city. Args: city", get_weather
+    )
+    manager.register_tool(
+        "weather__get_forecast", "Get weather forecast. Args: city, days (1-3)", get_forecast
+    )
+
+    # Register datetime tools
+    from servers.datetime_tools import calculate_date, days_between, get_current_time
+
+    manager.register_tool(
+        "datetime__get_current_time", "Get current date and time", get_current_time
+    )
+    manager.register_tool(
+        "datetime__calculate_date",
+        "Add/subtract days. Args: date_str (YYYY-MM-DD), days",
+        calculate_date,
+    )
+    manager.register_tool(
+        "datetime__days_between",
+        "Days between dates. Args: date1, date2 (YYYY-MM-DD)",
+        days_between,
+    )
+
+    # Register SQLite tools
+    from servers.sqlite_server import execute_query, execute_statement, list_tables
+
+    manager.register_tool(
+        "sqlite__execute_query", "Execute SELECT query. Args: query", execute_query
+    )
+    manager.register_tool(
+        "sqlite__execute_statement",
+        "Execute INSERT/UPDATE/DELETE/CREATE. Args: statement",
+        execute_statement,
+    )
+    manager.register_tool("sqlite__list_tables", "List all tables in the database", list_tables)
 
     all_tools = manager.get_tools_for_openai()
     print(f"  ✅ {len(all_tools)} tools loaded.\n")
