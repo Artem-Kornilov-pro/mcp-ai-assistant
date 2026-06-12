@@ -25,27 +25,105 @@ def get_weather(city: str) -> str:
         city: City name (e.g., "Moscow", "London", "Tokyo").
 
     Returns:
-        Current weather conditions and temperature.
+        Current conditions: temperature (°C), wind, humidity, visibility.
     """
-    return _request(f"{city}?format=3&lang=ru")
+    return _request(f"{city}?format=j1&lang=ru")
+
+
+@mcp.tool()
+def get_temperature(city: str) -> str:
+    """Get current temperature in Celsius for a city.
+
+    Args:
+        city: City name.
+
+    Returns:
+        Temperature in °C with feels-like.
+    """
+    return _request(f"{city}?format=%t+%28ощущается+как+%f%29&lang=ru")
 
 
 @mcp.tool()
 def get_forecast(city: str, days: int = 3) -> str:
-    """Get weather forecast for several days.
+    """Get weather forecast for up to 3 days.
 
     Args:
         city: City name.
         days: Number of days (1-3). Default: 3.
 
     Returns:
-        Weather forecast as formatted text.
+        Formatted forecast with temperatures in °C.
     """
-    if days < 1:
-        days = 1
-    if days > 3:
-        days = 3
-    return _request(f"{city}?format={days}&lang=ru")
+    days = max(1, min(days, 3))
+    return _request(f"{city}?format={days}&lang=ru&m")
+
+
+@mcp.tool()
+def get_wind(city: str) -> str:
+    """Get wind information for a city.
+
+    Args:
+        city: City name.
+
+    Returns:
+        Wind speed, direction, and gusts.
+    """
+    return _request(f"{city}?format=%w&lang=ru")
+
+
+@mcp.tool()
+def get_humidity(city: str) -> str:
+    """Get humidity for a city.
+
+    Args:
+        city: City name.
+
+    Returns:
+        Humidity percentage.
+    """
+    return _request(f"{city}?format=%h&lang=ru")
+
+
+@mcp.tool()
+def get_astronomy(city: str) -> str:
+    """Get sunrise, sunset, and moon phase for a city.
+
+    Args:
+        city: City name.
+
+    Returns:
+        Sunrise, sunset times, moon phase.
+    """
+    return _request(f"{city}?format=%S+%s+%m&lang=ru")
+
+
+@mcp.tool()
+def get_weather_ascii(city: str) -> str:
+    """Get a visual ASCII weather report for a city.
+
+    Args:
+        city: City name.
+
+    Returns:
+        Multi-day ASCII art weather chart.
+    """
+    return _request(f"{city}?lang=ru&m")
+
+
+@mcp.tool()
+def compare_weather(city1: str, city2: str) -> str:
+    """Compare current weather between two cities.
+
+    Args:
+        city1: First city.
+        city2: Second city.
+
+    Returns:
+        Side-by-side weather comparison.
+    """
+    weather1 = _request(f"{city1}?format=%l:+%t+%C&lang=ru").strip()
+    weather2 = _request(f"{city2}?format=%l:+%t+%C&lang=ru").strip()
+    return f"{weather1}\n{weather2}"
 
 
 if __name__ == "__main__":

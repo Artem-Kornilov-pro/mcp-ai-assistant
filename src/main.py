@@ -166,7 +166,13 @@ def _map_tool_name(name: str) -> str:
         "write_sheet": "googlesheets__write_sheet",
         "create_sheet": "googlesheets__create_sheet",
         "get_weather": "weather__get_weather",
+        "get_temperature": "weather__get_temperature",
         "get_forecast": "weather__get_forecast",
+        "get_wind": "weather__get_wind",
+        "get_humidity": "weather__get_humidity",
+        "get_astronomy": "weather__get_astronomy",
+        "get_weather_ascii": "weather__get_weather_ascii",
+        "compare_weather": "weather__compare_weather",
         "get_current_time": "datetime__get_current_time",
         "calculate_date": "datetime__calculate_date",
         "days_between": "datetime__days_between",
@@ -316,13 +322,40 @@ async def run_async() -> None:
     )
 
     # Register weather tools
-    from servers.weather import get_forecast, get_weather
+    from servers.weather import (
+        compare_weather,
+        get_astronomy,
+        get_forecast,
+        get_humidity,
+        get_temperature,
+        get_weather,
+        get_weather_ascii,
+        get_wind,
+    )
 
     manager.register_tool(
-        "weather__get_weather", "Get current weather for a city. Args: city", get_weather
+        "weather__get_weather",
+        "Current weather: temperature, wind, humidity. Args: city",
+        get_weather,
     )
     manager.register_tool(
-        "weather__get_forecast", "Get weather forecast. Args: city, days (1-3)", get_forecast
+        "weather__get_temperature", "Current temperature in °C. Args: city", get_temperature
+    )
+    manager.register_tool(
+        "weather__get_forecast", "3-day forecast in °C. Args: city, days (1-3)", get_forecast
+    )
+    manager.register_tool("weather__get_wind", "Wind speed and direction. Args: city", get_wind)
+    manager.register_tool("weather__get_humidity", "Humidity percentage. Args: city", get_humidity)
+    manager.register_tool(
+        "weather__get_astronomy", "Sunrise, sunset, moon phase. Args: city", get_astronomy
+    )
+    manager.register_tool(
+        "weather__get_weather_ascii", "Visual ASCII weather chart. Args: city", get_weather_ascii
+    )
+    manager.register_tool(
+        "weather__compare_weather",
+        "Compare weather of two cities. Args: city1, city2",
+        compare_weather,
     )
 
     from servers.datetime_tools import (
