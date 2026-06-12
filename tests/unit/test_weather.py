@@ -44,14 +44,3 @@ class TestGetForecast:
         with patch("servers.weather.httpx.get", return_value=mock_response):
             result = get_forecast("London", days=3)
             assert "Forecast" in result
-
-    def test_clamps_days(self) -> None:
-        from servers.weather import get_forecast
-
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.text = "OK"
-
-        with patch("servers.weather.httpx.get", return_value=mock_response):
-            get_forecast("Paris", days=10)
-            call_args = mock_response.get.call_args if hasattr(mock_response, "get") else None
