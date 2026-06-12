@@ -1,4 +1,4 @@
-"""MCP server for PDF operations (PyPDF2)."""
+"""MCP server for PDF operations (pypdf, fpdf2)."""
 
 import os
 from pathlib import Path
@@ -30,7 +30,7 @@ def read_pdf(path: str, max_pages: int = 10) -> str:
     Returns:
         Extracted text from PDF.
     """
-    from PyPDF2 import PdfReader
+    from pypdf import PdfReader
 
     target = _resolve_path(path)
     if not target.exists():
@@ -58,7 +58,7 @@ def pdf_info(path: str) -> str:
     Returns:
         Page count, metadata, file size.
     """
-    from PyPDF2 import PdfReader
+    from pypdf import PdfReader
 
     target = _resolve_path(path)
     if not target.exists():
@@ -89,7 +89,7 @@ def create_pdf(path: str, text: str, title: str = "Document") -> str:
 
     Args:
         path: Output .pdf path relative to workspace.
-        text: Text content for the PDF.
+        text: Text content for the PDF (ASCII only).
         title: Document title.
 
     Returns:
@@ -102,13 +102,13 @@ def create_pdf(path: str, text: str, title: str = "Document") -> str:
     pdf = FPDF()
     pdf.add_page()
     pdf.set_title(title)
+    pdf.set_font("Helvetica", "", 12)
 
-    # Add font with Unicode support
-    pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
-    pdf.set_font("DejaVu", "", 12)
+    page_width = pdf.w - 2 * pdf.l_margin
 
     for line in text.split("\n"):
-        pdf.multi_cell(0, 8, line)
+        safe_line = line.encode("latin-1", errors="replace").decode("latin-1")
+        pdf.multi_cell(w=page_width, h=8, text=safe_line)
 
     target.parent.mkdir(parents=True, exist_ok=True)
     pdf.output(str(target))
@@ -117,3 +117,4 @@ def create_pdf(path: str, text: str, title: str = "Document") -> str:
 
 if __name__ == "__main__":
     mcp.run()
+    
