@@ -1,6 +1,7 @@
 """Unit tests for SQLite MCP server."""
 
 import os
+from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import patch
 
@@ -10,15 +11,13 @@ os.environ["WORKSPACE_DIR"] = "./workspace"
 
 
 @pytest.fixture
-def clean_db(tmp_path: Path) -> Path:
+def clean_db(tmp_path: Path) -> Generator[Path, None, None]:
     """Use a temp database path."""
     ws = tmp_path / "workspace"
     ws.mkdir()
     db_path = ws / "assistant.db"
     with patch("servers.sqlite_server._get_db_path", return_value=db_path):
         yield db_path
-    if db_path.exists():
-        db_path.unlink()
 
 
 class TestSqlite:
@@ -28,8 +27,8 @@ class TestSqlite:
         from servers.sqlite_server import execute_statement, list_tables
 
         execute_statement("CREATE TABLE test (id INTEGER, name TEXT)")
-        tables = list_tables()
-        assert "test" in tables
+        result = list_tables()
+        assert "test" in result
 
     def test_insert_and_query(self, clean_db: Path) -> None:
         from servers.sqlite_server import execute_query, execute_statement
