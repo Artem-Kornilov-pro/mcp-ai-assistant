@@ -184,6 +184,16 @@ def _map_tool_name(name: str) -> str:
         "execute_query": "sqlite__execute_query",
         "execute_statement": "sqlite__execute_statement",
         "list_tables": "sqlite__list_tables",
+        "read_excel": "excel__read_excel",
+        "write_excel": "excel__write_excel",
+        "list_sheets": "excel__list_sheets",
+        "csv_to_excel": "excel__csv_to_excel",
+        "read_csv": "csv__read_csv",
+        "write_csv": "csv__write_csv",
+        "csv_to_json": "csv__csv_to_json",
+        "read_pdf": "pdf__read_pdf",
+        "pdf_info": "pdf__pdf_info",
+        "create_pdf": "pdf__create_pdf",
     }
     return mapping.get(name, name)
 
@@ -412,6 +422,46 @@ async def run_async() -> None:
         execute_statement,
     )
     manager.register_tool("sqlite__list_tables", "List all tables in the database", list_tables)
+
+    # Register Excel tools
+    from servers.excel_server import csv_to_excel, list_sheets, read_excel, write_excel
+
+    manager.register_tool(
+        "excel__read_excel", "Read Excel file. Args: path, sheet (optional)", read_excel
+    )
+    manager.register_tool(
+        "excel__write_excel",
+        "Write data to Excel. Args: path, data (tab-separated), sheet",
+        write_excel,
+    )
+    manager.register_tool(
+        "excel__list_sheets", "List sheets in Excel file. Args: path", list_sheets
+    )
+    manager.register_tool(
+        "excel__csv_to_excel",
+        "Convert CSV to Excel. Args: csv_path, excel_path, sheet",
+        csv_to_excel,
+    )
+
+    # Register CSV tools
+    from servers.csv_server import csv_to_json, read_csv, write_csv
+
+    manager.register_tool("csv__read_csv", "Read CSV file. Args: path, limit", read_csv)
+    manager.register_tool(
+        "csv__write_csv", "Write data to CSV. Args: path, data (tab-separated)", write_csv
+    )
+    manager.register_tool("csv__csv_to_json", "Convert CSV to JSON. Args: path", csv_to_json)
+
+    # Register PDF tools
+    from servers.pdf_server import create_pdf, pdf_info, read_pdf
+
+    manager.register_tool("pdf__read_pdf", "Extract text from PDF. Args: path, max_pages", read_pdf)
+    manager.register_tool(
+        "pdf__pdf_info", "Get PDF info: pages, size, metadata. Args: path", pdf_info
+    )
+    manager.register_tool(
+        "pdf__create_pdf", "Create PDF from text. Args: path, text, title", create_pdf
+    )
 
     all_tools = manager.get_tools_for_openai()
     print(f"  ✅ {len(all_tools)} tools loaded.\n")
