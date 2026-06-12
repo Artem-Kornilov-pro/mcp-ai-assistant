@@ -20,14 +20,22 @@ def workspace(tmp_path: Path) -> Path:
 class TestPDF:
     """Tests for PDF tools."""
 
-    def test_create_and_read(self, workspace: Path) -> None:
+    def test_create_and_read_ascii(self, workspace: Path) -> None:
         from servers.pdf_server import create_pdf, read_pdf
 
-        create_pdf("test.pdf", "Hello World\nThis is a test.", title="Test Doc")
+        create_pdf("test.pdf", "Hello", title="Test Doc")
         assert (workspace / "test.pdf").exists()
         result = read_pdf("test.pdf")
         assert "Hello" in result
-        assert "test" in result.lower()
+
+    def test_unicode_text(self, workspace: Path) -> None:
+        from servers.pdf_server import create_pdf, read_pdf
+
+        create_pdf("unicode.pdf", "Привет\nМир", title="Тест")
+        assert (workspace / "unicode.pdf").exists()
+        result = read_pdf("unicode.pdf")
+        assert "Привет" in result
+        assert "Мир" in result
 
     def test_pdf_info(self, workspace: Path) -> None:
         from servers.pdf_server import create_pdf, pdf_info
