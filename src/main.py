@@ -194,6 +194,9 @@ def _map_tool_name(name: str) -> str:
         "read_pdf": "pdf__read_pdf",
         "pdf_info": "pdf__pdf_info",
         "create_pdf": "pdf__create_pdf",
+        "zip_files": "archive__zip_files",
+        "unzip_file": "archive__unzip_file",
+        "list_archive": "archive__list_archive",
     }
     return mapping.get(name, name)
 
@@ -461,6 +464,23 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "pdf__create_pdf", "Create PDF from text. Args: path, text, title", create_pdf
+    )
+
+    # Register Archive tools
+    from servers.archive_server import list_archive, unzip_file, zip_files
+
+    manager.register_tool(
+        "archive__zip_files",
+        "Pack files into a ZIP archive. Args: paths (comma-separated), output",
+        zip_files,
+    )
+    manager.register_tool(
+        "archive__unzip_file",
+        "Extract a ZIP archive. Args: path, output_dir",
+        unzip_file,
+    )
+    manager.register_tool(
+        "archive__list_archive", "List contents of a ZIP archive. Args: path", list_archive
     )
 
     all_tools = manager.get_tools_for_openai()
