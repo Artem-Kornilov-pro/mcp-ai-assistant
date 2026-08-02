@@ -197,6 +197,11 @@ def _map_tool_name(name: str) -> str:
         "zip_files": "archive__zip_files",
         "unzip_file": "archive__unzip_file",
         "list_archive": "archive__list_archive",
+        "hash_text": "text__hash_text",
+        "encode_base64": "text__encode_base64",
+        "decode_base64": "text__decode_base64",
+        "generate_uuid": "text__generate_uuid",
+        "word_count": "text__word_count",
     }
     return mapping.get(name, name)
 
@@ -481,6 +486,25 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "archive__list_archive", "List contents of a ZIP archive. Args: path", list_archive
+    )
+
+    # Register Text tools
+    from servers.text_server import (
+        decode_base64,
+        encode_base64,
+        generate_uuid,
+        hash_text,
+        word_count,
+    )
+
+    manager.register_tool(
+        "text__hash_text", "Hash a text string. Args: text, algorithm (md5/sha1/sha256)", hash_text
+    )
+    manager.register_tool("text__encode_base64", "Encode text as base64. Args: text", encode_base64)
+    manager.register_tool("text__decode_base64", "Decode base64 to text. Args: data", decode_base64)
+    manager.register_tool("text__generate_uuid", "Generate a random UUID4", generate_uuid)
+    manager.register_tool(
+        "text__word_count", "Count words, characters, lines in text. Args: text", word_count
     )
 
     all_tools = manager.get_tools_for_openai()
