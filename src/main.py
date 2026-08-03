@@ -212,6 +212,14 @@ def _map_tool_name(name: str) -> str:
         "lcm": "math__lcm",
         "factorial": "math__factorial",
         "fibonacci": "math__fibonacci",
+        "vector_add": "linalg__vector_add",
+        "vector_subtract": "linalg__vector_subtract",
+        "vector_dot": "linalg__vector_dot",
+        "vector_norm": "linalg__vector_norm",
+        "matrix_multiply": "linalg__matrix_multiply",
+        "matrix_transpose": "linalg__matrix_transpose",
+        "matrix_determinant": "linalg__matrix_determinant",
+        "matrix_inverse": "linalg__matrix_inverse",
     }
     return mapping.get(name, name)
 
@@ -559,6 +567,59 @@ async def run_async() -> None:
     manager.register_tool("math__factorial", "Factorial of a number. Args: n", factorial)
     manager.register_tool(
         "math__fibonacci", "N-th Fibonacci number (0-indexed). Args: n", fibonacci
+    )
+
+    # Register Linalg tools
+    from servers.linalg_server import (
+        matrix_determinant,
+        matrix_inverse,
+        matrix_multiply,
+        matrix_transpose,
+        vector_add,
+        vector_dot,
+        vector_norm,
+        vector_subtract,
+    )
+
+    manager.register_tool(
+        "linalg__vector_add",
+        "Add two vectors element-wise. Args: v1, v2 (comma-separated numbers)",
+        vector_add,
+    )
+    manager.register_tool(
+        "linalg__vector_subtract",
+        "Subtract vectors element-wise. Args: v1, v2 (comma-separated numbers)",
+        vector_subtract,
+    )
+    manager.register_tool(
+        "linalg__vector_dot",
+        "Dot product of two vectors. Args: v1, v2 (comma-separated numbers)",
+        vector_dot,
+    )
+    manager.register_tool(
+        "linalg__vector_norm",
+        "Euclidean norm of a vector. Args: v (comma-separated numbers)",
+        vector_norm,
+    )
+    manager.register_tool(
+        "linalg__matrix_multiply",
+        "Multiply two matrices. Args: m1, m2 (rows ';', values ',')",
+        matrix_multiply,
+    )
+    manager.register_tool(
+        "linalg__matrix_transpose",
+        "Transpose a matrix. Args: m (rows ';', values ',')",
+        matrix_transpose,
+    )
+    manager.register_tool(
+        "linalg__matrix_determinant",
+        "Determinant of a square matrix. Args: m (rows ';', values ',')",
+        matrix_determinant,
+    )
+    manager.register_tool(
+        "linalg__matrix_inverse",
+        "Inverse of a square matrix. Args: m (rows ';', values ',')",
+        matrix_inverse,
     )
 
     all_tools = manager.get_tools_for_openai()
