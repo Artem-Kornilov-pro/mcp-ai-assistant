@@ -25,6 +25,7 @@ dependencies = [
     "reportlab>=4.0.0",
     "pymupdf>=1.24.0",
     "reportlab>=4.0.0",
+    "numpy>=1.26.0",
 ]
 
 [project.optional-dependencies]
