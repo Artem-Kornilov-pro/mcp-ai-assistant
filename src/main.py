@@ -207,6 +207,11 @@ def _map_tool_name(name: str) -> str:
         "random_choice": "random__random_choice",
         "shuffle_list": "random__shuffle_list",
         "random_sample": "random__random_sample",
+        "is_prime": "math__is_prime",
+        "gcd": "math__gcd",
+        "lcm": "math__lcm",
+        "factorial": "math__factorial",
+        "fibonacci": "math__fibonacci",
     }
     return mapping.get(name, name)
 
@@ -543,6 +548,17 @@ async def run_async() -> None:
         "random__random_sample",
         "Pick N unique random elements. Args: items (comma-separated), count",
         random_sample,
+    )
+
+    # Register Math tools
+    from servers.math_server import factorial, fibonacci, gcd, is_prime, lcm
+
+    manager.register_tool("math__is_prime", "Check if a number is prime. Args: n", is_prime)
+    manager.register_tool("math__gcd", "Greatest common divisor. Args: a, b", gcd)
+    manager.register_tool("math__lcm", "Least common multiple. Args: a, b", lcm)
+    manager.register_tool("math__factorial", "Factorial of a number. Args: n", factorial)
+    manager.register_tool(
+        "math__fibonacci", "N-th Fibonacci number (0-indexed). Args: n", fibonacci
     )
 
     all_tools = manager.get_tools_for_openai()
