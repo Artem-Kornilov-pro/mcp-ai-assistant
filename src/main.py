@@ -202,6 +202,11 @@ def _map_tool_name(name: str) -> str:
         "decode_base64": "text__decode_base64",
         "generate_uuid": "text__generate_uuid",
         "word_count": "text__word_count",
+        "random_int": "random__random_int",
+        "random_float": "random__random_float",
+        "random_choice": "random__random_choice",
+        "shuffle_list": "random__shuffle_list",
+        "random_sample": "random__random_sample",
     }
     return mapping.get(name, name)
 
@@ -505,6 +510,39 @@ async def run_async() -> None:
     manager.register_tool("text__generate_uuid", "Generate a random UUID4", generate_uuid)
     manager.register_tool(
         "text__word_count", "Count words, characters, lines in text. Args: text", word_count
+    )
+
+    # Register Random tools
+    from servers.random_server import (
+        random_choice,
+        random_float,
+        random_int,
+        random_sample,
+        shuffle_list,
+    )
+
+    manager.register_tool(
+        "random__random_int", "Random integer in range. Args: min_value, max_value", random_int
+    )
+    manager.register_tool(
+        "random__random_float",
+        "Random float in range. Args: min_value, max_value",
+        random_float,
+    )
+    manager.register_tool(
+        "random__random_choice",
+        "Pick a random element from a list. Args: items (comma-separated)",
+        random_choice,
+    )
+    manager.register_tool(
+        "random__shuffle_list",
+        "Shuffle a list. Args: items (comma-separated)",
+        shuffle_list,
+    )
+    manager.register_tool(
+        "random__random_sample",
+        "Pick N unique random elements. Args: items (comma-separated), count",
+        random_sample,
     )
 
     all_tools = manager.get_tools_for_openai()
