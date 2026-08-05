@@ -232,6 +232,16 @@ def _map_tool_name(name: str) -> str:
         "convert_format": "image__convert_format",
         "create_thumbnail": "image__create_thumbnail",
         "add_watermark": "image__add_watermark",
+        "plot_line": "chart__plot_line",
+        "plot_bar": "chart__plot_bar",
+        "plot_pie": "chart__plot_pie",
+        "plot_scatter": "chart__plot_scatter",
+        "plot_histogram": "chart__plot_histogram",
+        "plot_area": "chart__plot_area",
+        "plot_multi_line": "chart__plot_multi_line",
+        "plot_boxplot": "chart__plot_boxplot",
+        "plot_stacked_bar": "chart__plot_stacked_bar",
+        "plot_from_csv": "chart__plot_from_csv",
     }
     return mapping.get(name, name)
 
@@ -702,6 +712,73 @@ async def run_async() -> None:
         "image__add_watermark",
         "Add a text watermark. Args: path, text, output",
         add_watermark,
+    )
+
+    # Register Chart tools
+    from servers.chart_server import (
+        plot_area,
+        plot_bar,
+        plot_boxplot,
+        plot_from_csv,
+        plot_histogram,
+        plot_line,
+        plot_multi_line,
+        plot_pie,
+        plot_scatter,
+        plot_stacked_bar,
+    )
+
+    manager.register_tool(
+        "chart__plot_line",
+        "Line chart. Args: x, y (comma-separated numbers), output, title, xlabel, ylabel",
+        plot_line,
+    )
+    manager.register_tool(
+        "chart__plot_bar",
+        "Bar chart. Args: labels, values (comma-separated), output, title, xlabel, ylabel",
+        plot_bar,
+    )
+    manager.register_tool(
+        "chart__plot_pie",
+        "Pie chart. Args: labels, values (comma-separated), output, title",
+        plot_pie,
+    )
+    manager.register_tool(
+        "chart__plot_scatter",
+        "Scatter plot. Args: x, y (comma-separated numbers), output, title, xlabel, ylabel",
+        plot_scatter,
+    )
+    manager.register_tool(
+        "chart__plot_histogram",
+        "Histogram. Args: values (comma-separated numbers), output, bins, title, xlabel",
+        plot_histogram,
+    )
+    manager.register_tool(
+        "chart__plot_area",
+        "Filled area chart. Args: x, y (comma-separated numbers), output, title, xlabel, ylabel",
+        plot_area,
+    )
+    manager.register_tool(
+        "chart__plot_multi_line",
+        "Multi-series line chart. Args: x, series ('Label:v1,v2;Label2:v1,v2'), output, title, "
+        "xlabel, ylabel",
+        plot_multi_line,
+    )
+    manager.register_tool(
+        "chart__plot_boxplot",
+        "Box plot. Args: values (';'-separated datasets), output, labels, title",
+        plot_boxplot,
+    )
+    manager.register_tool(
+        "chart__plot_stacked_bar",
+        "Stacked bar chart. Args: labels, series ('Label:v1,v2;Label2:v1,v2'), output, title, "
+        "xlabel, ylabel",
+        plot_stacked_bar,
+    )
+    manager.register_tool(
+        "chart__plot_from_csv",
+        "Chart from a CSV file. Args: csv_path, x_column, y_column, output, chart_type, title",
+        plot_from_csv,
     )
 
     all_tools = manager.get_tools_for_openai()
