@@ -32,7 +32,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (84 инструмента)
+## 🛠 Возможности (91 инструмент)
 
 ### 📁 Файловая система (4)
 - **read_file** — чтение любого файла в рабочей директории
@@ -139,6 +139,16 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - **validate_email** / **validate_url** — проверка формата email и URL
 - **extract_emails** / **extract_urls** — извлечение email/URL из текста
 - **slugify** — преобразование текста в URL-safe slug
+
+### 🖼 Изображения (7)
+- **get_image_info** — размеры, формат, режим цвета, размер файла
+- **resize_image** — изменение размера изображения
+- **crop_image** — обрезка по координатам
+- **rotate_image** — поворот на заданный угол
+- **convert_format** — конвертация формата (по расширению выходного файла)
+- **create_thumbnail** — миниатюра с сохранением пропорций
+- **add_watermark** — текстовый водяной знак
+- 🎨 На базе Pillow
 
 ---
 
@@ -252,6 +262,7 @@ make type-check  # mypy strict mode
 | HTTP | httpx (асинхронный) |
 | Конфигурация | python-dotenv, Pydantic |
 | Линейная алгебра | NumPy |
+| Изображения | Pillow |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |
