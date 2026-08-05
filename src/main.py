@@ -220,6 +220,11 @@ def _map_tool_name(name: str) -> str:
         "matrix_transpose": "linalg__matrix_transpose",
         "matrix_determinant": "linalg__matrix_determinant",
         "matrix_inverse": "linalg__matrix_inverse",
+        "validate_email": "validate__validate_email",
+        "validate_url": "validate__validate_url",
+        "extract_emails": "validate__extract_emails",
+        "extract_urls": "validate__extract_urls",
+        "slugify": "validate__slugify",
     }
     return mapping.get(name, name)
 
@@ -620,6 +625,31 @@ async def run_async() -> None:
         "linalg__matrix_inverse",
         "Inverse of a square matrix. Args: m (rows ';', values ',')",
         matrix_inverse,
+    )
+
+    # Register Validate tools
+    from servers.validate_server import (
+        extract_emails,
+        extract_urls,
+        slugify,
+        validate_email,
+        validate_url,
+    )
+
+    manager.register_tool(
+        "validate__validate_email", "Check if a string is a valid email. Args: text", validate_email
+    )
+    manager.register_tool(
+        "validate__validate_url", "Check if a string is a valid URL. Args: text", validate_url
+    )
+    manager.register_tool(
+        "validate__extract_emails", "Extract all emails from text. Args: text", extract_emails
+    )
+    manager.register_tool(
+        "validate__extract_urls", "Extract all URLs from text. Args: text", extract_urls
+    )
+    manager.register_tool(
+        "validate__slugify", "Convert text into a URL-safe slug. Args: text", slugify
     )
 
     all_tools = manager.get_tools_for_openai()
