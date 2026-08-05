@@ -225,6 +225,13 @@ def _map_tool_name(name: str) -> str:
         "extract_emails": "validate__extract_emails",
         "extract_urls": "validate__extract_urls",
         "slugify": "validate__slugify",
+        "get_image_info": "image__get_image_info",
+        "resize_image": "image__resize_image",
+        "crop_image": "image__crop_image",
+        "rotate_image": "image__rotate_image",
+        "convert_format": "image__convert_format",
+        "create_thumbnail": "image__create_thumbnail",
+        "add_watermark": "image__add_watermark",
     }
     return mapping.get(name, name)
 
@@ -650,6 +657,51 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "validate__slugify", "Convert text into a URL-safe slug. Args: text", slugify
+    )
+
+    # Register Image tools
+    from servers.image_server import (
+        add_watermark,
+        convert_format,
+        create_thumbnail,
+        crop_image,
+        get_image_info,
+        resize_image,
+        rotate_image,
+    )
+
+    manager.register_tool(
+        "image__get_image_info",
+        "Get image dimensions, format, mode, size. Args: path",
+        get_image_info,
+    )
+    manager.register_tool(
+        "image__resize_image",
+        "Resize an image. Args: path, width, height, output",
+        resize_image,
+    )
+    manager.register_tool(
+        "image__crop_image",
+        "Crop an image. Args: path, left, top, right, bottom, output",
+        crop_image,
+    )
+    manager.register_tool(
+        "image__rotate_image", "Rotate an image. Args: path, degrees, output", rotate_image
+    )
+    manager.register_tool(
+        "image__convert_format",
+        "Convert image format by output extension. Args: path, output",
+        convert_format,
+    )
+    manager.register_tool(
+        "image__create_thumbnail",
+        "Create a thumbnail. Args: path, output, max_size",
+        create_thumbnail,
+    )
+    manager.register_tool(
+        "image__add_watermark",
+        "Add a text watermark. Args: path, text, output",
+        add_watermark,
     )
 
     all_tools = manager.get_tools_for_openai()
