@@ -299,7 +299,10 @@ def plot_boxplot(values: str, output: str, labels: str = "", title: str = "") ->
         raise ValueError(f"labels count mismatch: {len(label_list)} vs {len(datasets)}")
 
     fig, ax = plt.subplots()
-    ax.boxplot(datasets, labels=label_list)
+    ax.boxplot(datasets)
+    if label_list:
+        ax.set_xticks(range(1, len(label_list) + 1))
+        ax.set_xticklabels(label_list)
     ax.set_title(title)
     return _save_chart(fig, output)
 
