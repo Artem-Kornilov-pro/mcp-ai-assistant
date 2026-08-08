@@ -34,7 +34,7 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 
 ---
 
-## 🛠 Capabilities (115 tools)
+## 🛠 Capabilities (117 tools)
 
 <details>
 <summary><strong>📁 File system (4)</strong></summary>
@@ -239,6 +239,13 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 - 🏷 Generation via python-barcode, decoding via pyzbar (requires the system `libzbar` library)
 </details>
 
+<details>
+<summary><strong>🌐 Translation (2)</strong></summary>
+
+- **translate_text** — translate text via the MyMemory API (no key needed), with automatic source language detection
+- **detect_language** — detect the language of a text offline via langdetect
+</details>
+
 ---
 
 ## 📸 Demo
@@ -317,7 +324,8 @@ mcp-ai-assistant/
 │   ├── image_server.py       # Images (7)
 │   ├── chart_server.py       # Charts (10)
 │   ├── qr_server.py          # QR codes (10)
-│   └── barcode_server.py     # Barcodes (4)
+│   ├── barcode_server.py     # Barcodes (4)
+│   └── translate_server.py   # Translation (2)
 ├── tests/
 │   └── unit/                 # One test file per module above
 ├── screenshots/               # Usage screenshots
@@ -336,7 +344,7 @@ mcp-ai-assistant/
 ## 🧪 Testing and code quality
 
 ```bash
-make test        # pytest with coverage (245+ tests)
+make test        # pytest with coverage (250+ tests)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -362,6 +370,7 @@ make type-check  # mypy strict mode
 | Charts | Matplotlib |
 | QR codes | qrcode, OpenCV |
 | Barcodes | python-barcode, pyzbar |
+| Translation | MyMemory API, langdetect |
 | Testing | pytest, pytest-cov, pytest-asyncio |
 | Linter | ruff |
 | Typing | mypy (strict mode) |
