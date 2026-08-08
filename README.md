@@ -32,7 +32,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (101 инструмент)
+## 🛠 Возможности (111 инструментов)
 
 ### 📁 Файловая система (4)
 - **read_file** — чтение любого файла в рабочей директории
@@ -160,6 +160,19 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - **plot_from_csv** — построение графика прямо из CSV-файла рабочей директории
 - 📊 На базе Matplotlib
 
+### 🔲 QR-коды (10)
+- **generate_qr_code** — базовый QR-код из текста или ссылки
+- **generate_qr_code_colored** — QR-код с настраиваемыми цветами
+- **generate_qr_with_logo** — QR-код с логотипом по центру
+- **generate_wifi_qr** — QR-код для подключения к Wi-Fi
+- **generate_vcard_qr** — QR-код визитки (vCard)
+- **generate_sms_qr** — QR-код для отправки SMS
+- **generate_email_qr** — QR-код для письма (mailto)
+- **generate_geo_qr** — QR-код геолокации
+- **batch_generate_qr** — пакетная генерация нескольких QR-кодов
+- **read_qr_code** — распознавание и декодирование QR-кода с изображения
+- 📷 Генерация на qrcode, распознавание на OpenCV (без системных зависимостей)
+
 ---
 
 ## 📸 Демонстрация
@@ -274,6 +287,7 @@ make type-check  # mypy strict mode
 | Линейная алгебра | NumPy |
 | Изображения | Pillow |
 | Графики | Matplotlib |
+| QR-коды | qrcode, OpenCV |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |

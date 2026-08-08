@@ -242,6 +242,16 @@ def _map_tool_name(name: str) -> str:
         "plot_boxplot": "chart__plot_boxplot",
         "plot_stacked_bar": "chart__plot_stacked_bar",
         "plot_from_csv": "chart__plot_from_csv",
+        "generate_qr_code": "qr__generate_qr_code",
+        "generate_qr_code_colored": "qr__generate_qr_code_colored",
+        "generate_qr_with_logo": "qr__generate_qr_with_logo",
+        "generate_wifi_qr": "qr__generate_wifi_qr",
+        "generate_vcard_qr": "qr__generate_vcard_qr",
+        "generate_sms_qr": "qr__generate_sms_qr",
+        "generate_email_qr": "qr__generate_email_qr",
+        "generate_geo_qr": "qr__generate_geo_qr",
+        "batch_generate_qr": "qr__batch_generate_qr",
+        "read_qr_code": "qr__read_qr_code",
     }
     return mapping.get(name, name)
 
@@ -779,6 +789,70 @@ async def run_async() -> None:
         "chart__plot_from_csv",
         "Chart from a CSV file. Args: csv_path, x_column, y_column, output, chart_type, title",
         plot_from_csv,
+    )
+
+    # Register QR tools
+    from servers.qr_server import (
+        batch_generate_qr,
+        generate_email_qr,
+        generate_geo_qr,
+        generate_qr_code,
+        generate_qr_code_colored,
+        generate_qr_with_logo,
+        generate_sms_qr,
+        generate_vcard_qr,
+        generate_wifi_qr,
+        read_qr_code,
+    )
+
+    manager.register_tool(
+        "qr__generate_qr_code",
+        "Generate a QR code from text/URL. Args: data, output, box_size, border, error_correction",
+        generate_qr_code,
+    )
+    manager.register_tool(
+        "qr__generate_qr_code_colored",
+        "Generate a colored QR code. Args: data, output, fill_color, back_color, box_size, border",
+        generate_qr_code_colored,
+    )
+    manager.register_tool(
+        "qr__generate_qr_with_logo",
+        "Generate a QR code with an embedded logo. Args: data, logo_path, output, box_size, border",
+        generate_qr_with_logo,
+    )
+    manager.register_tool(
+        "qr__generate_wifi_qr",
+        "Generate a Wi-Fi connect QR code. Args: ssid, password, output, security, hidden",
+        generate_wifi_qr,
+    )
+    manager.register_tool(
+        "qr__generate_vcard_qr",
+        "Generate a contact card QR code. Args: name, output, phone, email, organization, url",
+        generate_vcard_qr,
+    )
+    manager.register_tool(
+        "qr__generate_sms_qr",
+        "Generate an SMS QR code. Args: phone, message, output",
+        generate_sms_qr,
+    )
+    manager.register_tool(
+        "qr__generate_email_qr",
+        "Generate an email QR code. Args: email, output, subject, body",
+        generate_email_qr,
+    )
+    manager.register_tool(
+        "qr__generate_geo_qr",
+        "Generate a geolocation QR code. Args: latitude, longitude, output",
+        generate_geo_qr,
+    )
+    manager.register_tool(
+        "qr__batch_generate_qr",
+        "Generate multiple QR codes at once. Args: items ('file.png:data;file2.png:data2'), "
+        "output_dir, box_size, border",
+        batch_generate_qr,
+    )
+    manager.register_tool(
+        "qr__read_qr_code", "Decode QR code(s) from an image. Args: path", read_qr_code
     )
 
     all_tools = manager.get_tools_for_openai()
