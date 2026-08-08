@@ -32,7 +32,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (111 инструментов)
+## 🛠 Возможности (115 инструментов)
 
 ### 📁 Файловая система (4)
 - **read_file** — чтение любого файла в рабочей директории
@@ -173,6 +173,13 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - **read_qr_code** — распознавание и декодирование QR-кода с изображения
 - 📷 Генерация на qrcode, распознавание на OpenCV (без системных зависимостей)
 
+### 📊 Штрихкоды (4)
+- **generate_barcode** — линейный штрихкод (Code128, EAN13, EAN8, UPC, Code39, ISBN и др.)
+- **list_barcode_types** — список поддерживаемых типов штрихкодов
+- **batch_generate_barcode** — пакетная генерация нескольких штрихкодов
+- **read_barcode** — распознавание и декодирование штрихкода с изображения
+- 🏷 Генерация на python-barcode, распознавание на pyzbar (требует системную библиотеку libzbar)
+
 ---
 
 ## 📸 Демонстрация
@@ -199,6 +206,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - Yandex Cloud API ключ (для LLM)
 - GitHub Personal Access Token
 - Google OAuth Access Token (для Google Sheets)
+- Системная библиотека `libzbar0` (для чтения штрихкодов, `read_barcode`) — на Debian/Ubuntu: `apt-get install libzbar0`
 
 ### Установка
 ```bash
@@ -288,6 +296,7 @@ make type-check  # mypy strict mode
 | Изображения | Pillow |
 | Графики | Matplotlib |
 | QR-коды | qrcode, OpenCV |
+| Штрихкоды | python-barcode, pyzbar |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |

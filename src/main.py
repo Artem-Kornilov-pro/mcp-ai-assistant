@@ -252,6 +252,10 @@ def _map_tool_name(name: str) -> str:
         "generate_geo_qr": "qr__generate_geo_qr",
         "batch_generate_qr": "qr__batch_generate_qr",
         "read_qr_code": "qr__read_qr_code",
+        "list_barcode_types": "barcode__list_barcode_types",
+        "generate_barcode": "barcode__generate_barcode",
+        "batch_generate_barcode": "barcode__batch_generate_barcode",
+        "read_barcode": "barcode__read_barcode",
     }
     return mapping.get(name, name)
 
@@ -853,6 +857,34 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "qr__read_qr_code", "Decode QR code(s) from an image. Args: path", read_qr_code
+    )
+
+    # Register Barcode tools
+    from servers.barcode_server import (
+        batch_generate_barcode,
+        generate_barcode,
+        list_barcode_types,
+        read_barcode,
+    )
+
+    manager.register_tool(
+        "barcode__list_barcode_types",
+        "List supported barcode symbologies (code128, ean13, upca, ...)",
+        list_barcode_types,
+    )
+    manager.register_tool(
+        "barcode__generate_barcode",
+        "Generate a linear barcode. Args: data, output, barcode_type, write_text",
+        generate_barcode,
+    )
+    manager.register_tool(
+        "barcode__batch_generate_barcode",
+        "Generate multiple barcodes at once. Args: items ('file.png:data;file2.png:data2'), "
+        "output_dir, barcode_type",
+        batch_generate_barcode,
+    )
+    manager.register_tool(
+        "barcode__read_barcode", "Decode barcode(s) from an image. Args: path", read_barcode
     )
 
     all_tools = manager.get_tools_for_openai()
