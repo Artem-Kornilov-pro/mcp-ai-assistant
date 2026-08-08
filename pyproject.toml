@@ -33,6 +33,7 @@ dependencies = [
     "python-barcode>=0.15.0",
     "pyzbar>=0.1.9",
     "langdetect>=1.0.9",
+    "sympy>=1.12",
 ]
 
 [project.optional-dependencies]

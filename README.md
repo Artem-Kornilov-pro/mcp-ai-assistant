@@ -34,7 +34,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (117 инструментов)
+## 🛠 Возможности (122 инструмента)
 
 <details>
 <summary><strong>📁 Файловая система (4)</strong></summary>
@@ -246,6 +246,17 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - **detect_language** — определение языка текста офлайн через langdetect
 </details>
 
+<details>
+<summary><strong>🧮 Уравнения и неравенства (5)</strong></summary>
+
+- **solve_equation** — решение произвольного уравнения (например, `"x**2 - 5*x + 6 = 0"`)
+- **solve_quadratic** — решение квадратного уравнения ax²+bx+c=0 с дискриминантом, включая комплексные корни
+- **solve_linear_system** — решение системы линейных уравнений
+- **solve_inequality** — решение неравенства (например, `"x**2 - 4 > 0"`)
+- **simplify_expression** — упрощение символьного выражения
+- 🧠 На базе SymPy
+</details>
+
 ---
 
 ## 📸 Демонстрация
@@ -325,7 +336,8 @@ mcp-ai-assistant/
 │   ├── chart_server.py      # Графики (10)
 │   ├── qr_server.py         # QR-коды (10)
 │   ├── barcode_server.py    # Штрихкоды (4)
-│   └── translate_server.py  # Перевод (2)
+│   ├── translate_server.py  # Перевод (2)
+│   └── equation_server.py   # Уравнения и неравенства (5)
 ├── tests/
 │   └── unit/                # По одному файлу тестов на каждый модуль выше
 ├── screenshots/             # Скриншоты работы
@@ -344,7 +356,7 @@ mcp-ai-assistant/
 ## 🧪 Тестирование и качество кода
 
 ```bash
-make test        # pytest с покрытием (250+ тестов)
+make test        # pytest с покрытием (270+ тестов)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -371,6 +383,7 @@ make type-check  # mypy strict mode
 | QR-коды | qrcode, OpenCV |
 | Штрихкоды | python-barcode, pyzbar |
 | Перевод | MyMemory API, langdetect |
+| Уравнения и неравенства | SymPy |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |

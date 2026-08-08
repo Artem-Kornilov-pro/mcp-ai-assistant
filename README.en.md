@@ -34,7 +34,7 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 
 ---
 
-## 🛠 Capabilities (117 tools)
+## 🛠 Capabilities (122 tools)
 
 <details>
 <summary><strong>📁 File system (4)</strong></summary>
@@ -246,6 +246,17 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 - **detect_language** — detect the language of a text offline via langdetect
 </details>
 
+<details>
+<summary><strong>🧮 Equations & inequalities (5)</strong></summary>
+
+- **solve_equation** — solve an arbitrary equation (e.g. `"x**2 - 5*x + 6 = 0"`)
+- **solve_quadratic** — solve a quadratic equation ax²+bx+c=0, with the discriminant, including complex roots
+- **solve_linear_system** — solve a system of linear equations
+- **solve_inequality** — solve an inequality (e.g. `"x**2 - 4 > 0"`)
+- **simplify_expression** — simplify a symbolic expression
+- 🧠 Built on SymPy
+</details>
+
 ---
 
 ## 📸 Demo
@@ -325,7 +336,8 @@ mcp-ai-assistant/
 │   ├── chart_server.py       # Charts (10)
 │   ├── qr_server.py          # QR codes (10)
 │   ├── barcode_server.py     # Barcodes (4)
-│   └── translate_server.py   # Translation (2)
+│   ├── translate_server.py   # Translation (2)
+│   └── equation_server.py    # Equations & inequalities (5)
 ├── tests/
 │   └── unit/                 # One test file per module above
 ├── screenshots/               # Usage screenshots
@@ -344,7 +356,7 @@ mcp-ai-assistant/
 ## 🧪 Testing and code quality
 
 ```bash
-make test        # pytest with coverage (250+ tests)
+make test        # pytest with coverage (270+ tests)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -371,6 +383,7 @@ make type-check  # mypy strict mode
 | QR codes | qrcode, OpenCV |
 | Barcodes | python-barcode, pyzbar |
 | Translation | MyMemory API, langdetect |
+| Equations & inequalities | SymPy |
 | Testing | pytest, pytest-cov, pytest-asyncio |
 | Linter | ruff |
 | Typing | mypy (strict mode) |

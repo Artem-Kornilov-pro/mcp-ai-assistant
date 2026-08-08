@@ -258,6 +258,11 @@ def _map_tool_name(name: str) -> str:
         "read_barcode": "barcode__read_barcode",
         "translate_text": "translate__translate_text",
         "detect_language": "translate__detect_language",
+        "solve_equation": "equation__solve_equation",
+        "solve_quadratic": "equation__solve_quadratic",
+        "solve_linear_system": "equation__solve_linear_system",
+        "solve_inequality": "equation__solve_inequality",
+        "simplify_expression": "equation__simplify_expression",
     }
     return mapping.get(name, name)
 
@@ -899,6 +904,42 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "translate__detect_language", "Detect the language of a text. Args: text", detect_language
+    )
+
+    # Register Equation tools
+    from servers.equation_server import (
+        simplify_expression,
+        solve_equation,
+        solve_inequality,
+        solve_linear_system,
+        solve_quadratic,
+    )
+
+    manager.register_tool(
+        "equation__solve_equation",
+        "Solve an equation for a variable. Args: equation, variable",
+        solve_equation,
+    )
+    manager.register_tool(
+        "equation__solve_quadratic",
+        "Solve a*x^2+b*x+c=0. Args: a, b, c",
+        solve_quadratic,
+    )
+    manager.register_tool(
+        "equation__solve_linear_system",
+        "Solve a system of linear equations. Args: equations (';'-separated), variables "
+        "(comma-separated)",
+        solve_linear_system,
+    )
+    manager.register_tool(
+        "equation__solve_inequality",
+        "Solve an inequality for a variable. Args: inequality, variable",
+        solve_inequality,
+    )
+    manager.register_tool(
+        "equation__simplify_expression",
+        "Simplify a symbolic math expression. Args: expression",
+        simplify_expression,
     )
 
     all_tools = manager.get_tools_for_openai()
