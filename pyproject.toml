@@ -32,6 +32,7 @@ dependencies = [
     "opencv-python-headless>=4.9.0,<5.0.0",
     "python-barcode>=0.15.0",
     "pyzbar>=0.1.9",
+    "langdetect>=1.0.9",
 ]
 
 [project.optional-dependencies]

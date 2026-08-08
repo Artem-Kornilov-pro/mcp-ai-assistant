@@ -34,7 +34,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (115 инструментов)
+## 🛠 Возможности (117 инструментов)
 
 <details>
 <summary><strong>📁 Файловая система (4)</strong></summary>
@@ -239,6 +239,13 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - 🏷 Генерация на python-barcode, распознавание на pyzbar (требует системную библиотеку libzbar)
 </details>
 
+<details>
+<summary><strong>🌐 Перевод (2)</strong></summary>
+
+- **translate_text** — перевод текста через MyMemory API (без ключа), с автоопределением исходного языка
+- **detect_language** — определение языка текста офлайн через langdetect
+</details>
+
 ---
 
 ## 📸 Демонстрация
@@ -317,7 +324,8 @@ mcp-ai-assistant/
 │   ├── image_server.py      # Изображения (7)
 │   ├── chart_server.py      # Графики (10)
 │   ├── qr_server.py         # QR-коды (10)
-│   └── barcode_server.py    # Штрихкоды (4)
+│   ├── barcode_server.py    # Штрихкоды (4)
+│   └── translate_server.py  # Перевод (2)
 ├── tests/
 │   └── unit/                # По одному файлу тестов на каждый модуль выше
 ├── screenshots/             # Скриншоты работы
@@ -336,7 +344,7 @@ mcp-ai-assistant/
 ## 🧪 Тестирование и качество кода
 
 ```bash
-make test        # pytest с покрытием (245+ тестов)
+make test        # pytest с покрытием (250+ тестов)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -362,6 +370,7 @@ make type-check  # mypy strict mode
 | Графики | Matplotlib |
 | QR-коды | qrcode, OpenCV |
 | Штрихкоды | python-barcode, pyzbar |
+| Перевод | MyMemory API, langdetect |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |

@@ -256,6 +256,8 @@ def _map_tool_name(name: str) -> str:
         "generate_barcode": "barcode__generate_barcode",
         "batch_generate_barcode": "barcode__batch_generate_barcode",
         "read_barcode": "barcode__read_barcode",
+        "translate_text": "translate__translate_text",
+        "detect_language": "translate__detect_language",
     }
     return mapping.get(name, name)
 
@@ -885,6 +887,18 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "barcode__read_barcode", "Decode barcode(s) from an image. Args: path", read_barcode
+    )
+
+    # Register Translate tools
+    from servers.translate_server import detect_language, translate_text
+
+    manager.register_tool(
+        "translate__translate_text",
+        "Translate text. Args: text, target_lang, source_lang (default 'auto')",
+        translate_text,
+    )
+    manager.register_tool(
+        "translate__detect_language", "Detect the language of a text. Args: text", detect_language
     )
 
     all_tools = manager.get_tools_for_openai()
