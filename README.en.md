@@ -34,7 +34,7 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 
 ---
 
-## 🛠 Capabilities (125 tools)
+## 🛠 Capabilities (130 tools)
 
 <details>
 <summary><strong>📁 File system (4)</strong></summary>
@@ -266,6 +266,16 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 - 💰 exchangerate-api.com API — no token, no registration
 </details>
 
+<details>
+<summary><strong>📐 Units (5)</strong></summary>
+
+- **convert_length** — length (meters, kilometers, miles, feet, inches, etc.)
+- **convert_weight** — weight (grams, kilograms, pounds, ounces, etc.)
+- **convert_temperature** — temperature (Celsius, Fahrenheit, Kelvin)
+- **convert_volume** — volume (liters, gallons, quarts, cups, etc.)
+- **convert_area** — area (square meters, hectares, acres, etc.)
+</details>
+
 ---
 
 ## 📸 Demo
@@ -347,7 +357,8 @@ mcp-ai-assistant/
 │   ├── barcode_server.py     # Barcodes (4)
 │   ├── translate_server.py   # Translation (2)
 │   ├── equation_server.py    # Equations & inequalities (5)
-│   └── currency_server.py    # Currency (3)
+│   ├── currency_server.py    # Currency (3)
+│   └── units_server.py       # Units (5)
 ├── tests/
 │   └── unit/                 # One test file per module above
 ├── screenshots/               # Usage screenshots
@@ -366,7 +377,7 @@ mcp-ai-assistant/
 ## 🧪 Testing and code quality
 
 ```bash
-make test        # pytest with coverage (275+ tests)
+make test        # pytest with coverage (290+ tests)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -395,6 +406,7 @@ make type-check  # mypy strict mode
 | Translation | MyMemory API, langdetect |
 | Equations & inequalities | SymPy |
 | Currency | exchangerate-api.com |
+| Units | standard library |
 | Testing | pytest, pytest-cov, pytest-asyncio |
 | Linter | ruff |
 | Typing | mypy (strict mode) |
