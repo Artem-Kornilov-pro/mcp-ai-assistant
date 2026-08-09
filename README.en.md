@@ -34,7 +34,7 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 
 ---
 
-## 🛠 Capabilities (122 tools)
+## 🛠 Capabilities (125 tools)
 
 <details>
 <summary><strong>📁 File system (4)</strong></summary>
@@ -257,6 +257,15 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 - 🧠 Built on SymPy
 </details>
 
+<details>
+<summary><strong>💱 Currency (3)</strong></summary>
+
+- **convert_currency** — convert an amount from one currency to another at the current rate
+- **get_exchange_rate** — current exchange rate between two currencies
+- **list_currencies** — list supported currency codes (~166, including RUB)
+- 💰 exchangerate-api.com API — no token, no registration
+</details>
+
 ---
 
 ## 📸 Demo
@@ -337,7 +346,8 @@ mcp-ai-assistant/
 │   ├── qr_server.py          # QR codes (10)
 │   ├── barcode_server.py     # Barcodes (4)
 │   ├── translate_server.py   # Translation (2)
-│   └── equation_server.py    # Equations & inequalities (5)
+│   ├── equation_server.py    # Equations & inequalities (5)
+│   └── currency_server.py    # Currency (3)
 ├── tests/
 │   └── unit/                 # One test file per module above
 ├── screenshots/               # Usage screenshots
@@ -356,7 +366,7 @@ mcp-ai-assistant/
 ## 🧪 Testing and code quality
 
 ```bash
-make test        # pytest with coverage (270+ tests)
+make test        # pytest with coverage (275+ tests)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -384,6 +394,7 @@ make type-check  # mypy strict mode
 | Barcodes | python-barcode, pyzbar |
 | Translation | MyMemory API, langdetect |
 | Equations & inequalities | SymPy |
+| Currency | exchangerate-api.com |
 | Testing | pytest, pytest-cov, pytest-asyncio |
 | Linter | ruff |
 | Typing | mypy (strict mode) |
