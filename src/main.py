@@ -266,6 +266,11 @@ def _map_tool_name(name: str) -> str:
         "convert_currency": "currency__convert_currency",
         "get_exchange_rate": "currency__get_exchange_rate",
         "list_currencies": "currency__list_currencies",
+        "convert_length": "units__convert_length",
+        "convert_weight": "units__convert_weight",
+        "convert_temperature": "units__convert_temperature",
+        "convert_volume": "units__convert_volume",
+        "convert_area": "units__convert_area",
     }
     return mapping.get(name, name)
 
@@ -960,6 +965,44 @@ async def run_async() -> None:
     )
     manager.register_tool(
         "currency__list_currencies", "List supported currency codes", list_currencies
+    )
+
+    # Register Units tools
+    from servers.units_server import (
+        convert_area,
+        convert_length,
+        convert_temperature,
+        convert_volume,
+        convert_weight,
+    )
+
+    manager.register_tool(
+        "units__convert_length",
+        "Convert length. Args: value, from_unit, to_unit (m, km, cm, mm, mile, yard, foot, "
+        "inch, nautical_mile)",
+        convert_length,
+    )
+    manager.register_tool(
+        "units__convert_weight",
+        "Convert weight. Args: value, from_unit, to_unit (g, kg, mg, ton, pound, ounce, stone)",
+        convert_weight,
+    )
+    manager.register_tool(
+        "units__convert_temperature",
+        "Convert temperature. Args: value, from_unit, to_unit (celsius, fahrenheit, kelvin)",
+        convert_temperature,
+    )
+    manager.register_tool(
+        "units__convert_volume",
+        "Convert volume. Args: value, from_unit, to_unit (l, ml, cubic_meter, gallon, quart, "
+        "pint, cup)",
+        convert_volume,
+    )
+    manager.register_tool(
+        "units__convert_area",
+        "Convert area. Args: value, from_unit, to_unit (sq_m, hectare, sq_km, acre, sq_ft, "
+        "sq_mile)",
+        convert_area,
     )
 
     all_tools = manager.get_tools_for_openai()

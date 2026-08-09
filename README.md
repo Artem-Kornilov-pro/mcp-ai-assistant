@@ -34,7 +34,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (125 инструментов)
+## 🛠 Возможности (130 инструментов)
 
 <details>
 <summary><strong>📁 Файловая система (4)</strong></summary>
@@ -266,6 +266,16 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - 💰 API exchangerate-api.com — без токена, без регистрации
 </details>
 
+<details>
+<summary><strong>📐 Единицы измерения (5)</strong></summary>
+
+- **convert_length** — длина (метры, километры, мили, футы, дюймы и др.)
+- **convert_weight** — вес (граммы, килограммы, фунты, унции и др.)
+- **convert_temperature** — температура (Цельсий, Фаренгейт, Кельвин)
+- **convert_volume** — объём (литры, галлоны, кварты, чашки и др.)
+- **convert_area** — площадь (кв. метры, гектары, акры и др.)
+</details>
+
 ---
 
 ## 📸 Демонстрация
@@ -347,7 +357,8 @@ mcp-ai-assistant/
 │   ├── barcode_server.py    # Штрихкоды (4)
 │   ├── translate_server.py  # Перевод (2)
 │   ├── equation_server.py   # Уравнения и неравенства (5)
-│   └── currency_server.py   # Валюты (3)
+│   ├── currency_server.py   # Валюты (3)
+│   └── units_server.py      # Единицы измерения (5)
 ├── tests/
 │   └── unit/                # По одному файлу тестов на каждый модуль выше
 ├── screenshots/             # Скриншоты работы
@@ -366,7 +377,7 @@ mcp-ai-assistant/
 ## 🧪 Тестирование и качество кода
 
 ```bash
-make test        # pytest с покрытием (275+ тестов)
+make test        # pytest с покрытием (290+ тестов)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -395,6 +406,7 @@ make type-check  # mypy strict mode
 | Перевод | MyMemory API, langdetect |
 | Уравнения и неравенства | SymPy |
 | Валюты | exchangerate-api.com |
+| Единицы измерения | стандартная библиотека |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |
