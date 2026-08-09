@@ -34,7 +34,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (122 инструмента)
+## 🛠 Возможности (125 инструментов)
 
 <details>
 <summary><strong>📁 Файловая система (4)</strong></summary>
@@ -257,6 +257,15 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - 🧠 На базе SymPy
 </details>
 
+<details>
+<summary><strong>💱 Валюты (3)</strong></summary>
+
+- **convert_currency** — конвертация суммы из одной валюты в другую по актуальному курсу
+- **get_exchange_rate** — текущий курс между двумя валютами
+- **list_currencies** — список поддерживаемых кодов валют (~166, включая RUB)
+- 💰 API exchangerate-api.com — без токена, без регистрации
+</details>
+
 ---
 
 ## 📸 Демонстрация
@@ -337,7 +346,8 @@ mcp-ai-assistant/
 │   ├── qr_server.py         # QR-коды (10)
 │   ├── barcode_server.py    # Штрихкоды (4)
 │   ├── translate_server.py  # Перевод (2)
-│   └── equation_server.py   # Уравнения и неравенства (5)
+│   ├── equation_server.py   # Уравнения и неравенства (5)
+│   └── currency_server.py   # Валюты (3)
 ├── tests/
 │   └── unit/                # По одному файлу тестов на каждый модуль выше
 ├── screenshots/             # Скриншоты работы
@@ -356,7 +366,7 @@ mcp-ai-assistant/
 ## 🧪 Тестирование и качество кода
 
 ```bash
-make test        # pytest с покрытием (270+ тестов)
+make test        # pytest с покрытием (275+ тестов)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -384,6 +394,7 @@ make type-check  # mypy strict mode
 | Штрихкоды | python-barcode, pyzbar |
 | Перевод | MyMemory API, langdetect |
 | Уравнения и неравенства | SymPy |
+| Валюты | exchangerate-api.com |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |

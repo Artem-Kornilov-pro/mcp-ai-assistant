@@ -263,6 +263,9 @@ def _map_tool_name(name: str) -> str:
         "solve_linear_system": "equation__solve_linear_system",
         "solve_inequality": "equation__solve_inequality",
         "simplify_expression": "equation__simplify_expression",
+        "convert_currency": "currency__convert_currency",
+        "get_exchange_rate": "currency__get_exchange_rate",
+        "list_currencies": "currency__list_currencies",
     }
     return mapping.get(name, name)
 
@@ -940,6 +943,23 @@ async def run_async() -> None:
         "equation__simplify_expression",
         "Simplify a symbolic math expression. Args: expression",
         simplify_expression,
+    )
+
+    # Register Currency tools
+    from servers.currency_server import convert_currency, get_exchange_rate, list_currencies
+
+    manager.register_tool(
+        "currency__convert_currency",
+        "Convert an amount between currencies. Args: amount, from_currency, to_currency",
+        convert_currency,
+    )
+    manager.register_tool(
+        "currency__get_exchange_rate",
+        "Get the current exchange rate. Args: from_currency, to_currency",
+        get_exchange_rate,
+    )
+    manager.register_tool(
+        "currency__list_currencies", "List supported currency codes", list_currencies
     )
 
     all_tools = manager.get_tools_for_openai()
