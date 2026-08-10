@@ -34,7 +34,7 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 
 ---
 
-## 🛠 Capabilities (130 tools)
+## 🛠 Capabilities (134 tools)
 
 <details>
 <summary><strong>📁 File system (4)</strong></summary>
@@ -276,6 +276,16 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 - **convert_area** — area (square meters, hectares, acres, etc.)
 </details>
 
+<details>
+<summary><strong>🎉 Holidays (4)</strong></summary>
+
+- **get_public_holidays** — list a country's public holidays for a year
+- **is_public_holiday** — check whether a specific date is a public holiday
+- **get_next_holidays** — upcoming public holidays
+- **list_holiday_countries** — list supported countries (~205, including RU)
+- 🎊 date.nager.at API — no token, no registration
+</details>
+
 ---
 
 ## 📸 Demo
@@ -358,7 +368,8 @@ mcp-ai-assistant/
 │   ├── translate_server.py   # Translation (2)
 │   ├── equation_server.py    # Equations & inequalities (5)
 │   ├── currency_server.py    # Currency (3)
-│   └── units_server.py       # Units (5)
+│   ├── units_server.py       # Units (5)
+│   └── holidays_server.py    # Holidays (4)
 ├── tests/
 │   └── unit/                 # One test file per module above
 ├── screenshots/               # Usage screenshots
@@ -377,7 +388,7 @@ mcp-ai-assistant/
 ## 🧪 Testing and code quality
 
 ```bash
-make test        # pytest with coverage (290+ tests)
+make test        # pytest with coverage (300+ tests)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -407,6 +418,7 @@ make type-check  # mypy strict mode
 | Equations & inequalities | SymPy |
 | Currency | exchangerate-api.com |
 | Units | standard library |
+| Holidays | date.nager.at |
 | Testing | pytest, pytest-cov, pytest-asyncio |
 | Linter | ruff |
 | Typing | mypy (strict mode) |

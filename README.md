@@ -34,7 +34,7 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ---
 
-## 🛠 Возможности (130 инструментов)
+## 🛠 Возможности (134 инструмента)
 
 <details>
 <summary><strong>📁 Файловая система (4)</strong></summary>
@@ -276,6 +276,16 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 - **convert_area** — площадь (кв. метры, гектары, акры и др.)
 </details>
 
+<details>
+<summary><strong>🎉 Праздники (4)</strong></summary>
+
+- **get_public_holidays** — список праздников страны за год
+- **is_public_holiday** — проверка, является ли конкретная дата праздником
+- **get_next_holidays** — ближайшие предстоящие праздники
+- **list_holiday_countries** — список поддерживаемых стран (~205, включая RU)
+- 🎊 API date.nager.at — без токена, без регистрации
+</details>
+
 ---
 
 ## 📸 Демонстрация
@@ -358,7 +368,8 @@ mcp-ai-assistant/
 │   ├── translate_server.py  # Перевод (2)
 │   ├── equation_server.py   # Уравнения и неравенства (5)
 │   ├── currency_server.py   # Валюты (3)
-│   └── units_server.py      # Единицы измерения (5)
+│   ├── units_server.py      # Единицы измерения (5)
+│   └── holidays_server.py   # Праздники (4)
 ├── tests/
 │   └── unit/                # По одному файлу тестов на каждый модуль выше
 ├── screenshots/             # Скриншоты работы
@@ -377,7 +388,7 @@ mcp-ai-assistant/
 ## 🧪 Тестирование и качество кода
 
 ```bash
-make test        # pytest с покрытием (290+ тестов)
+make test        # pytest с покрытием (300+ тестов)
 make lint        # ruff check + format check
 make type-check  # mypy strict mode
 ```
@@ -407,6 +418,7 @@ make type-check  # mypy strict mode
 | Уравнения и неравенства | SymPy |
 | Валюты | exchangerate-api.com |
 | Единицы измерения | стандартная библиотека |
+| Праздники | date.nager.at |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |
