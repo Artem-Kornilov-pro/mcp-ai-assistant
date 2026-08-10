@@ -271,6 +271,10 @@ def _map_tool_name(name: str) -> str:
         "convert_temperature": "units__convert_temperature",
         "convert_volume": "units__convert_volume",
         "convert_area": "units__convert_area",
+        "get_public_holidays": "holidays__get_public_holidays",
+        "is_public_holiday": "holidays__is_public_holiday",
+        "get_next_holidays": "holidays__get_next_holidays",
+        "list_holiday_countries": "holidays__list_holiday_countries",
     }
     return mapping.get(name, name)
 
@@ -1003,6 +1007,35 @@ async def run_async() -> None:
         "Convert area. Args: value, from_unit, to_unit (sq_m, hectare, sq_km, acre, sq_ft, "
         "sq_mile)",
         convert_area,
+    )
+
+    # Register Holidays tools
+    from servers.holidays_server import (
+        get_next_holidays,
+        get_public_holidays,
+        is_public_holiday,
+        list_holiday_countries,
+    )
+
+    manager.register_tool(
+        "holidays__get_public_holidays",
+        "Get public holidays for a country and year. Args: country_code, year",
+        get_public_holidays,
+    )
+    manager.register_tool(
+        "holidays__is_public_holiday",
+        "Check if a date is a public holiday. Args: country_code, date (YYYY-MM-DD)",
+        is_public_holiday,
+    )
+    manager.register_tool(
+        "holidays__get_next_holidays",
+        "Get upcoming public holidays for a country. Args: country_code",
+        get_next_holidays,
+    )
+    manager.register_tool(
+        "holidays__list_holiday_countries",
+        "List countries with holiday data",
+        list_holiday_countries,
     )
 
     all_tools = manager.get_tools_for_openai()
