@@ -1,4 +1,4 @@
-.PHONY: install test lint format type-check run clean
+.PHONY: install test lint format type-check run run-chat docker-build docker-run clean
 
 install:
 	pip install -e ".[dev]"
@@ -17,8 +17,17 @@ type-check:
 	mypy src/ tests/unit/
 
 run:
-	python -m src.main
+	python -m src.gateway
+
+run-chat:
+	python -m examples.terminal_chat
+
+docker-build:
+	docker build -t mcp-ai-assistant .
+
+docker-run:
+	docker run --rm -p 8000:8000 --env-file .env mcp-ai-assistant
 
 clean:
 	rm -rf __pycache__ .pytest_cache .mypy_cache .ruff_cache
-	rm -rf src/__pycache__ tests/__pycache__ tests/unit/__pycache__ servers/__pycache__
+	rm -rf src/__pycache__ tests/__pycache__ tests/unit/__pycache__ servers/__pycache__ examples/__pycache__

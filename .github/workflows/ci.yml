@@ -68,3 +68,12 @@ jobs:
 
       - name: Run mypy
         run: mypy src/ tests/unit/
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build image
+        run: docker build -t mcp-ai-assistant .

@@ -6,31 +6,31 @@
 
 🇷🇺 Русский | [🇬🇧 English](README.en.md)
 
-**Персональный AI-ассистент с MCP-архитектурой, способный управлять файлами, GitHub и Google Sheets через естественный язык.**
+**Dockerized MCP-сервер со 134 инструментами (файлы, GitHub, Google Sheets, погода, изображения, QR/штрихкоды, математика, валюты и др.), доступный по HTTP или stdio — подключается из Claude Desktop, Claude Code, Cursor или любого другого MCP-клиента.**
 
 ---
 
 ## 🎯 Что это?
 
-MCP AI Assistant — это терминальный AI-помощник, который не просто отвечает на вопросы, а **совершает действия** в реальном мире. Он умеет читать и писать файлы, управлять GitHub-репозиториями, создавать issues и pull requests, работать с Google Sheets — и всё это через обычный диалог.
+MCP AI Assistant — это библиотека готовых MCP-инструментов, упакованная в один Docker-образ. Внутри — 24 тематических сервера (файловая система, GitHub, погода, изображения, QR-коды, математика, валюты и т.д.), которые можно подключить целиком или частично к любому MCP-совместимому клиенту через обычный сетевой запрос, без установки Python или самого проекта.
 
-Проект построен на **Model Context Protocol (MCP)** — открытом стандарте для подключения AI-моделей к внешним инструментам.
+Проект построен на **Model Context Protocol (MCP)** — открытом стандарте для подключения AI-моделей к внешним инструментам. Помимо самого MCP-сервера, в `examples/terminal_chat.py` есть готовый пример клиента — терминальный AI-ассистент, который использует эти же инструменты напрямую через диалог на естественном языке.
 
 ---
 
 ## 🧠 Как это работает
 
 ```
-Пользователь → Терминал → LLM (DeepSeek) → MCP Server → Внешний сервис
-                                                  ├── Файловая система
-                                                  ├── GitHub API
-                                                  └── Google Sheets API
+MCP-клиент → HTTP / stdio → MCP-гейтвей (src/gateway.py) → выбранные servers/*.py → внешний сервис
+(Claude Desktop,                                                  ├── Файловая система
+ Claude Code, Cursor,                                              ├── GitHub / Google Sheets API
+ ваше приложение...)                                               └── погода, валюты, QR и т.д.
 ```
 
-1. Вы пишете запрос на естественном языке
-2. LLM анализирует запрос и решает, какие инструменты нужны
-3. MCP-сервер выполняет вызов API
-4. Результат возвращается в диалог
+1. При старте контейнера переменная `MCP_SERVERS` определяет, какие домены инструментов включить (по умолчанию — все 24)
+2. `src/gateway.py` монтирует выбранные `servers/*.py` в один MCP-эндпоинт
+3. Любой MCP-клиент подключается по HTTP (или stdio) и видит список доступных инструментов
+4. Клиент вызывает инструмент напрямую — без LLM в середине, если он не нужен вашему приложению
 
 ---
 
@@ -290,6 +290,8 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 
 ## 📸 Демонстрация
 
+Скриншоты ниже — из терминального примера клиента (`examples/terminal_chat.py`).
+
 ![](screenshots/01-help.png)
 
 ![](screenshots/02-tools.png)
@@ -308,28 +310,52 @@ MCP AI Assistant — это терминальный AI-помощник, кот
 ## 🚀 Быстрый старт
 
 ### Требования
-- Python 3.12+
-- Yandex Cloud API ключ (для LLM)
-- GitHub Personal Access Token
-- Google OAuth Access Token (для Google Sheets)
-- Системная библиотека `libzbar0` (для чтения штрихкодов, `read_barcode`) — на Debian/Ubuntu: `apt-get install libzbar0`
+- Docker и Docker Compose (рекомендуемый способ)
+- Или Python 3.12+ для запуска без контейнера
+- GitHub Personal Access Token и Google OAuth Access Token — только если используете домены `github`/`google_sheets`
+- Yandex Cloud API ключ — только для примера с терминальным чатом (`examples/terminal_chat.py`)
 
-### Установка
+### Docker (рекомендуется)
+
 ```bash
 git clone https://github.com/Artem-Kornilov-pro/mcp-ai-assistant.git
 cd mcp-ai-assistant
+cp .env.example .env   # нужен только доменам, которым требуются токены (github, google_sheets)
+docker compose up --build
+```
+
+Сервер поднимется на `http://localhost:8000/mcp` (транспорт Streamable HTTP). По умолчанию доступны все 24 домена и 134 инструмента.
+
+#### Выбор доменов инструментов
+
+Какие домены включены, определяет переменная `MCP_SERVERS` (список ключей через запятую; по умолчанию или при `all` — включены все):
+
+```bash
+MCP_SERVERS=weather,currency,qr docker compose up --build
+```
+
+Доступные ключи: `filesystem`, `github`, `google_sheets`, `weather`, `datetime`, `sqlite`, `excel`, `csv`, `pdf`, `archive`, `text`, `random`, `math`, `linalg`, `validate`, `image`, `chart`, `qr`, `barcode`, `translate`, `equation`, `currency`, `units`, `holidays`.
+
+#### Подключение MCP-клиента
+
+- **Claude Desktop / Claude Code / Cursor и другие MCP-клиенты**: укажите HTTP-эндпоинт `http://localhost:8000/mcp` в конфигурации MCP-серверов клиента.
+- **Напрямую (без Docker, для локальной интеграции по stdio)**: `MCP_TRANSPORT=stdio python -m src.gateway` — подходит для конфигов вида `"command": "python", "args": ["-m", "src.gateway"]`.
+
+### Без Docker
+
+```bash
 make install
+make run                 # эквивалент MCP_TRANSPORT=http PORT=8000 MCP_SERVERS=all
 ```
 
-### Настройка
-```bash
-cp .env.example .env
-# Заполни .env своими ключами
-```
+### Пример клиента: терминальный чат
 
-### Запуск
+`examples/terminal_chat.py` — самостоятельный терминальный AI-ассистент (Yandex Cloud/DeepSeek), который вызывает инструменты из `servers/*.py` напрямую по естественноязыковому диалогу, без MCP-транспорта. Демонстрирует, как использовать эту библиотеку инструментов внутри своего приложения.
+
 ```bash
-make run
+make install
+cp .env.example .env     # заполните YANDEX_CLOUD_API_KEY и YANDEX_CLOUD_FOLDER_ID
+make run-chat
 ```
 
 ---
@@ -342,8 +368,8 @@ mcp-ai-assistant/
 │   ├── __init__.py          # Пакет
 │   ├── config.py            # Загрузка конфигурации из .env
 │   ├── llm.py               # LLM-клиент (Yandex Cloud / DeepSeek)
-│   ├── mcp_manager.py       # Менеджер MCP-инструментов
-│   └── main.py              # Терминальный чат-интерфейс
+│   ├── mcp_manager.py       # Прямой вызов инструментов (используется примером-чатом)
+│   └── gateway.py           # MCP-гейтвей: реестр доменов, монтирование, HTTP/stdio-сервер
 ├── servers/
 │   ├── __init__.py
 │   ├── filesystem.py        # Файловая система (4)
@@ -370,12 +396,16 @@ mcp-ai-assistant/
 │   ├── currency_server.py   # Валюты (3)
 │   ├── units_server.py      # Единицы измерения (5)
 │   └── holidays_server.py   # Праздники (4)
+├── examples/
+│   └── terminal_chat.py     # Пример клиента: терминальный AI-ассистент
 ├── tests/
-│   └── unit/                # По одному файлу тестов на каждый модуль выше
-├── screenshots/             # Скриншоты работы
+│   └── unit/                # По одному файлу тестов на каждый модуль выше + test_gateway.py
+├── screenshots/             # Скриншоты работы (пример-чат)
 ├── .github/workflows/
-│   └── ci.yml               # CI/CD: ruff + pytest + mypy
-├── workspace/               # Рабочая директория (файлы, БД)
+│   └── ci.yml               # CI/CD: ruff + pytest + mypy + docker build
+├── workspace/                # Рабочая директория (файлы, БД)
+├── Dockerfile
+├── docker-compose.yml
 ├── pyproject.toml
 ├── Makefile
 ├── LICENSE
@@ -388,15 +418,17 @@ mcp-ai-assistant/
 ## 🧪 Тестирование и качество кода
 
 ```bash
-make test        # pytest с покрытием (300+ тестов)
-make lint        # ruff check + format check
-make type-check  # mypy strict mode
+make test         # pytest с покрытием (300+ тестов)
+make lint         # ruff check + format check
+make type-check   # mypy strict mode
+make docker-build # сборка Docker-образа
 ```
 
 **CI/CD**: GitHub Actions автоматически проверяет каждый PR и push в master:
 - ✅ Ruff — линтер
 - ✅ Pytest — юнит-тесты с coverage
 - ✅ Mypy — строгая типизация
+- ✅ Docker build — образ должен собираться
 
 ---
 
@@ -405,8 +437,9 @@ make type-check  # mypy strict mode
 | Категория | Технология |
 |-----------|-----------|
 | Язык | Python 3.12 |
-| LLM | Yandex Cloud / DeepSeek (OpenAI-совместимый API) |
-| MCP | FastMCP |
+| MCP-сервер | FastMCP (HTTP / stdio транспорт) |
+| Контейнеризация | Docker, Docker Compose |
+| LLM (пример-чат) | Yandex Cloud / DeepSeek (OpenAI-совместимый API) |
 | HTTP | httpx (асинхронный) |
 | Конфигурация | python-dotenv, Pydantic |
 | Линейная алгебра | NumPy |
@@ -426,7 +459,13 @@ make type-check  # mypy strict mode
 
 ---
 
-## 📋 Примеры запросов
+## 📋 Примеры использования
+
+### Вызов инструмента напрямую (MCP-клиент)
+
+После подключения к `http://localhost:8000/mcp` инструменты доступны под именами `<домен>_<название>`, например `weather_get_weather`, `currency_convert_currency`, `qr_generate_qr_code` — так, как они появляются в списке `tools/list`.
+
+### Через пример-чат на естественном языке (`examples/terminal_chat.py`)
 
 ```text
 # Файлы
@@ -449,12 +488,11 @@ make type-check  # mypy strict mode
 
 ## 🔮 Планы развития
 
+- [x] Dockerized MCP-сервер с выбором доменов инструментов (`MCP_SERVERS`)
+- [ ] Публикация образа в GitHub Container Registry при релизных тегах
 - [ ] MCP-сервер для Telegram (отправка сообщений)
 - [ ] MCP-сервер для работы с браузером (Playwright)
-- [ ] Веб-интерфейс (FastAPI + WebSocket)
-- [ ] Поддержка нескольких LLM-провайдеров (Ollama, Anthropic)
 - [ ] RAG (Retrieval-Augmented Generation) для работы с документами
-- [ ] Агентные цепочки (Agent Chains) для сложных сценариев
 
 ---
 
