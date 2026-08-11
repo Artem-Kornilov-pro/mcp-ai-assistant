@@ -1,4 +1,4 @@
-"""Unit tests for CLI chat interface."""
+"""Unit tests for the terminal chat example client."""
 
 from typing import Any
 
@@ -9,7 +9,7 @@ class TestHandleUserInput:
     """Tests for handle_user_input function."""
 
     def test_exit_command(self) -> None:
-        from src.main import handle_user_input
+        from examples.terminal_chat import handle_user_input
 
         messages: list[dict[str, Any]] = []
         result = handle_user_input("/exit", messages)
@@ -17,7 +17,7 @@ class TestHandleUserInput:
         assert messages == []
 
     def test_clear_command(self) -> None:
-        from src.main import handle_user_input
+        from examples.terminal_chat import handle_user_input
 
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": "You are helpful."},
@@ -29,7 +29,7 @@ class TestHandleUserInput:
         assert messages == [{"role": "system", "content": "You are helpful."}]
 
     def test_help_command(self) -> None:
-        from src.main import handle_user_input
+        from examples.terminal_chat import handle_user_input
 
         messages: list[dict[str, Any]] = []
         result = handle_user_input("/help", messages)
@@ -37,7 +37,7 @@ class TestHandleUserInput:
         assert messages == []
 
     def test_normal_message(self) -> None:
-        from src.main import handle_user_input
+        from examples.terminal_chat import handle_user_input
 
         messages: list[dict[str, Any]] = []
         result = handle_user_input("Hello, AI!", messages)
@@ -45,7 +45,7 @@ class TestHandleUserInput:
         assert messages == [{"role": "user", "content": "Hello, AI!"}]
 
     def test_empty_input(self) -> None:
-        from src.main import handle_user_input
+        from examples.terminal_chat import handle_user_input
 
         messages: list[dict[str, Any]] = []
         result = handle_user_input("", messages)
@@ -53,7 +53,7 @@ class TestHandleUserInput:
         assert messages == []
 
     def test_whitespace_input(self) -> None:
-        from src.main import handle_user_input
+        from examples.terminal_chat import handle_user_input
 
         messages: list[dict[str, Any]] = []
         result = handle_user_input("   ", messages)
@@ -65,14 +65,14 @@ class TestPrintToolCall:
     """Tests for tool call display functions."""
 
     def test_print_tool_call_no_args(self, capsys: pytest.CaptureFixture[str]) -> None:
-        from src.main import print_tool_call
+        from examples.terminal_chat import print_tool_call
 
         print_tool_call("read_file", {})
         captured = capsys.readouterr()
         assert "read_file" in captured.out
 
     def test_print_tool_call_with_args(self, capsys: pytest.CaptureFixture[str]) -> None:
-        from src.main import print_tool_call
+        from examples.terminal_chat import print_tool_call
 
         print_tool_call("write_file", {"path": "test.txt", "content": "hello"})
         captured = capsys.readouterr()
@@ -80,7 +80,7 @@ class TestPrintToolCall:
         assert "test.txt" in captured.out
 
     def test_print_tool_call_long_value_truncated(self, capsys: pytest.CaptureFixture[str]) -> None:
-        from src.main import print_tool_call
+        from examples.terminal_chat import print_tool_call
 
         long_val = "x" * 100
         print_tool_call("search", {"query": long_val})
@@ -92,14 +92,14 @@ class TestPrintToolResult:
     """Tests for tool result display functions."""
 
     def test_print_short_result(self, capsys: pytest.CaptureFixture[str]) -> None:
-        from src.main import print_tool_result
+        from examples.terminal_chat import print_tool_result
 
         print_tool_result("File written successfully")
         captured = capsys.readouterr()
         assert "File written successfully" in captured.out
 
     def test_print_long_result_truncated(self, capsys: pytest.CaptureFixture[str]) -> None:
-        from src.main import print_tool_result
+        from examples.terminal_chat import print_tool_result
 
         long_result = "x" * 200
         print_tool_result(long_result)
@@ -107,7 +107,7 @@ class TestPrintToolResult:
         assert "..." in captured.out
 
     def test_print_multiline_result(self, capsys: pytest.CaptureFixture[str]) -> None:
-        from src.main import print_tool_result
+        from examples.terminal_chat import print_tool_result
 
         multiline = "line1\nline2\nline3"
         print_tool_result(multiline)

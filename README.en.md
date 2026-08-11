@@ -6,31 +6,31 @@
 
 [🇷🇺 Русский](README.md) | 🇬🇧 English
 
-**A personal AI assistant with an MCP architecture, able to manage files, GitHub, and Google Sheets through natural language.**
+**A Dockerized MCP server exposing 134 tools (files, GitHub, Google Sheets, weather, images, QR/barcodes, math, currency, and more) over HTTP or stdio — connect from Claude Desktop, Claude Code, Cursor, or any other MCP client.**
 
 ---
 
 ## 🎯 What is this?
 
-MCP AI Assistant is a terminal AI helper that doesn't just answer questions — it **takes real actions**. It can read and write files, manage GitHub repositories, create issues and pull requests, and work with Google Sheets, all through plain conversation.
+MCP AI Assistant is a library of ready-made MCP tools packaged into a single Docker image. Inside are 24 domain servers (file system, GitHub, weather, images, QR codes, math, currency, and more) that you can connect — fully or partially — to any MCP-compatible client over a plain network request, with no need to install Python or the project itself.
 
-The project is built on the **Model Context Protocol (MCP)** — an open standard for connecting AI models to external tools.
+The project is built on the **Model Context Protocol (MCP)** — an open standard for connecting AI models to external tools. Alongside the MCP server itself, `examples/terminal_chat.py` is a ready-made example client — a terminal AI assistant that uses these same tools directly through natural-language conversation.
 
 ---
 
 ## 🧠 How it works
 
 ```
-User → Terminal → LLM (DeepSeek) → MCP Server → External service
-                                          ├── File system
-                                          ├── GitHub API
-                                          └── Google Sheets API
+MCP client → HTTP / stdio → MCP gateway (src/gateway.py) → selected servers/*.py → external service
+(Claude Desktop,                                                  ├── File system
+ Claude Code, Cursor,                                              ├── GitHub / Google Sheets API
+ your app...)                                                      └── weather, currency, QR, etc.
 ```
 
-1. You write a request in natural language
-2. The LLM analyzes the request and decides which tools are needed
-3. The MCP server makes the API call
-4. The result is returned to the conversation
+1. On container start, the `MCP_SERVERS` variable decides which tool domains are enabled (all 24 by default)
+2. `src/gateway.py` mounts the selected `servers/*.py` modules behind a single MCP endpoint
+3. Any MCP client connects over HTTP (or stdio) and sees the list of available tools
+4. The client calls a tool directly — no LLM in the middle unless your app needs one
 
 ---
 
@@ -290,6 +290,8 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 
 ## 📸 Demo
 
+The screenshots below are from the terminal example client (`examples/terminal_chat.py`).
+
 ![](screenshots/01-help.png)
 
 ![](screenshots/02-tools.png)
@@ -308,28 +310,52 @@ User → Terminal → LLM (DeepSeek) → MCP Server → External service
 ## 🚀 Quick start
 
 ### Requirements
-- Python 3.12+
-- Yandex Cloud API key (for the LLM)
-- GitHub Personal Access Token
-- Google OAuth Access Token (for Google Sheets)
-- System library `libzbar0` (for barcode reading, `read_barcode`) — on Debian/Ubuntu: `apt-get install libzbar0`
+- Docker and Docker Compose (recommended path)
+- Or Python 3.12+ to run without a container
+- GitHub Personal Access Token and Google OAuth Access Token — only if you use the `github`/`google_sheets` domains
+- Yandex Cloud API key — only for the terminal chat example (`examples/terminal_chat.py`)
 
-### Installation
+### Docker (recommended)
+
 ```bash
 git clone https://github.com/Artem-Kornilov-pro/mcp-ai-assistant.git
 cd mcp-ai-assistant
+cp .env.example .env   # only needed by domains that require tokens (github, google_sheets)
+docker compose up --build
+```
+
+The server comes up at `http://localhost:8000/mcp` (Streamable HTTP transport). All 24 domains and 134 tools are enabled by default.
+
+#### Choosing which tool domains to expose
+
+`MCP_SERVERS` controls which domains are enabled (comma-separated keys; unset or `all` enables everything):
+
+```bash
+MCP_SERVERS=weather,currency,qr docker compose up --build
+```
+
+Available keys: `filesystem`, `github`, `google_sheets`, `weather`, `datetime`, `sqlite`, `excel`, `csv`, `pdf`, `archive`, `text`, `random`, `math`, `linalg`, `validate`, `image`, `chart`, `qr`, `barcode`, `translate`, `equation`, `currency`, `units`, `holidays`.
+
+#### Connecting an MCP client
+
+- **Claude Desktop / Claude Code / Cursor and other MCP clients**: point your client's MCP server configuration at the HTTP endpoint `http://localhost:8000/mcp`.
+- **Directly (no Docker, for local stdio integration)**: `MCP_TRANSPORT=stdio python -m src.gateway` — suitable for configs like `"command": "python", "args": ["-m", "src.gateway"]`.
+
+### Without Docker
+
+```bash
 make install
+make run                 # equivalent to MCP_TRANSPORT=http PORT=8000 MCP_SERVERS=all
 ```
 
-### Configuration
-```bash
-cp .env.example .env
-# Fill .env with your keys
-```
+### Example client: terminal chat
 
-### Run
+`examples/terminal_chat.py` is a standalone terminal AI assistant (Yandex Cloud/DeepSeek) that calls the tools in `servers/*.py` directly from natural-language conversation, without MCP transport. It demonstrates how to use this tool library inside your own application.
+
 ```bash
-make run
+make install
+cp .env.example .env     # fill in YANDEX_CLOUD_API_KEY and YANDEX_CLOUD_FOLDER_ID
+make run-chat
 ```
 
 ---
@@ -342,8 +368,8 @@ mcp-ai-assistant/
 │   ├── __init__.py          # Package
 │   ├── config.py            # Configuration loading from .env
 │   ├── llm.py                # LLM client (Yandex Cloud / DeepSeek)
-│   ├── mcp_manager.py       # MCP tool manager
-│   └── main.py               # Terminal chat interface
+│   ├── mcp_manager.py       # Direct tool calling (used by the example chat)
+│   └── gateway.py            # MCP gateway: domain registry, mounting, HTTP/stdio server
 ├── servers/
 │   ├── __init__.py
 │   ├── filesystem.py        # File system (4)
@@ -370,12 +396,16 @@ mcp-ai-assistant/
 │   ├── currency_server.py    # Currency (3)
 │   ├── units_server.py       # Units (5)
 │   └── holidays_server.py    # Holidays (4)
+├── examples/
+│   └── terminal_chat.py      # Example client: terminal AI assistant
 ├── tests/
-│   └── unit/                 # One test file per module above
-├── screenshots/               # Usage screenshots
+│   └── unit/                 # One test file per module above + test_gateway.py
+├── screenshots/               # Usage screenshots (example chat)
 ├── .github/workflows/
-│   └── ci.yml                 # CI/CD: ruff + pytest + mypy
+│   └── ci.yml                 # CI/CD: ruff + pytest + mypy + docker build
 ├── workspace/                 # Workspace directory (files, DB)
+├── Dockerfile
+├── docker-compose.yml
 ├── pyproject.toml
 ├── Makefile
 ├── LICENSE
@@ -388,15 +418,17 @@ mcp-ai-assistant/
 ## 🧪 Testing and code quality
 
 ```bash
-make test        # pytest with coverage (300+ tests)
-make lint        # ruff check + format check
-make type-check  # mypy strict mode
+make test         # pytest with coverage (300+ tests)
+make lint         # ruff check + format check
+make type-check   # mypy strict mode
+make docker-build # build the Docker image
 ```
 
 **CI/CD**: GitHub Actions automatically checks every PR and push to master:
 - ✅ Ruff — linter
 - ✅ Pytest — unit tests with coverage
 - ✅ Mypy — strict typing
+- ✅ Docker build — image must build successfully
 
 ---
 
@@ -405,8 +437,9 @@ make type-check  # mypy strict mode
 | Category | Technology |
 |-----------|-----------|
 | Language | Python 3.12 |
-| LLM | Yandex Cloud / DeepSeek (OpenAI-compatible API) |
-| MCP | FastMCP |
+| MCP server | FastMCP (HTTP / stdio transport) |
+| Containerization | Docker, Docker Compose |
+| LLM (example chat) | Yandex Cloud / DeepSeek (OpenAI-compatible API) |
 | HTTP | httpx (async) |
 | Configuration | python-dotenv, Pydantic |
 | Linear algebra | NumPy |
@@ -426,7 +459,13 @@ make type-check  # mypy strict mode
 
 ---
 
-## 📋 Example requests
+## 📋 Usage examples
+
+### Calling a tool directly (MCP client)
+
+Once connected to `http://localhost:8000/mcp`, tools are available under `<domain>_<name>`, e.g. `weather_get_weather`, `currency_convert_currency`, `qr_generate_qr_code` — exactly as they appear in the `tools/list` response.
+
+### Through the example chat, in natural language (`examples/terminal_chat.py`)
 
 ```text
 # Files
@@ -449,12 +488,11 @@ make type-check  # mypy strict mode
 
 ## 🔮 Roadmap
 
+- [x] Dockerized MCP server with tool-domain selection (`MCP_SERVERS`)
+- [ ] Publish the image to GitHub Container Registry on release tags
 - [ ] MCP server for Telegram (sending messages)
 - [ ] MCP server for browser automation (Playwright)
-- [ ] Web interface (FastAPI + WebSocket)
-- [ ] Support for multiple LLM providers (Ollama, Anthropic)
 - [ ] RAG (Retrieval-Augmented Generation) for working with documents
-- [ ] Agent chains for complex scenarios
 
 ---
 
