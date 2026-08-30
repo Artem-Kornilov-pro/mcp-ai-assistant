@@ -1,6 +1,7 @@
 """Unit tests for the MCP gateway."""
 
 import os
+from typing import Any
 
 import pytest
 
@@ -73,3 +74,38 @@ class TestBuildGateway:
         monkeypatch.setenv("MCP_SERVERS", "totally_bogus")
         with pytest.raises(ValueError, match="Unknown server"):
             build_gateway()
+
+
+class TestBearerAuthMiddleware:
+    """Tests for BearerAuthMiddleware."""
+
+    def _make_client(self, api_key: str) -> Any:
+        from starlette.applications import Starlette
+        from starlette.responses import PlainTextResponse
+        from starlette.routing import Route
+        from starlette.testclient import TestClient
+
+        from src.gateway import BearerAuthMiddleware
+
+        async def homepage(request: object) -> PlainTextResponse:
+            return PlainTextResponse("ok")
+
+        app = Starlette(routes=[Route("/", homepage)])
+        app.add_middleware(BearerAuthMiddleware, api_key=api_key)
+        return TestClient(app)
+
+    def test_missing_token_rejected(self) -> None:
+        client = self._make_client("secret123")
+        response = client.get("/")
+        assert response.status_code == 401
+
+    def test_wrong_token_rejected(self) -> None:
+        client = self._make_client("secret123")
+        response = client.get("/", headers={"Authorization": "Bearer wrong"})
+        assert response.status_code == 401
+
+    def test_correct_token_allowed(self) -> None:
+        client = self._make_client("secret123")
+        response = client.get("/", headers={"Authorization": "Bearer secret123"})
+        assert response.status_code == 200
+        assert response.text == "ok"

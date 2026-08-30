@@ -10,6 +10,9 @@ import importlib
 import os
 
 from fastmcp import FastMCP
+from starlette.middleware import Middleware
+from starlette.responses import JSONResponse
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 SERVER_REGISTRY: dict[str, str] = {
     "filesystem": "servers.filesystem",
@@ -54,6 +57,36 @@ def _select_servers(raw: str) -> list[str]:
     return keys
 
 
+class BearerAuthMiddleware:
+    """Minimal ASGI middleware requiring a bearer token on every HTTP request.
+
+    A plain ASGI middleware (rather than Starlette's BaseHTTPMiddleware) so it
+    doesn't interfere with the streaming SSE responses the MCP HTTP transport uses.
+    """
+
+    def __init__(self, app: ASGIApp, api_key: str) -> None:
+        self.app = app
+        self.api_key = api_key
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        headers = dict(scope["headers"])
+        auth_header = headers.get(b"authorization", b"").decode()
+
+        if auth_header != f"Bearer {self.api_key}":
+            response = JSONResponse(
+                {"error": "unauthorized", "error_description": "Missing or invalid bearer token"},
+                status_code=401,
+            )
+            await response(scope, receive, send)
+            return
+
+        await self.app(scope, receive, send)
+
+
 def build_gateway() -> FastMCP[None]:
     """Assemble a gateway FastMCP instance from the servers selected via MCP_SERVERS."""
     gateway: FastMCP[None] = FastMCP("MCP AI Assistant")
@@ -68,11 +101,18 @@ def build_gateway() -> FastMCP[None]:
 def main() -> None:
     """Build the gateway and run it with the configured transport."""
     gateway = build_gateway()
-    gateway.run(
-        transport=os.getenv("MCP_TRANSPORT", "http"),  # type: ignore[arg-type]
-        host=os.getenv("HOST", "0.0.0.0"),
-        port=int(os.getenv("PORT", "8000")),
-    )
+    transport = os.getenv("MCP_TRANSPORT", "http")
+
+    run_kwargs: dict[str, object] = {}
+    if transport != "stdio":
+        run_kwargs["host"] = os.getenv("HOST", "0.0.0.0")
+        run_kwargs["port"] = int(os.getenv("PORT", "8000"))
+
+        api_key = os.getenv("MCP_API_KEY")
+        if api_key:
+            run_kwargs["middleware"] = [Middleware(BearerAuthMiddleware, api_key=api_key)]
+
+    gateway.run(transport=transport, **run_kwargs)  # type: ignore[arg-type]
 
 
 if __name__ == "__main__":
