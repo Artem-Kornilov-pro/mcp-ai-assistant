@@ -336,6 +336,14 @@ MCP_SERVERS=weather,currency,qr docker compose up --build
 
 Available keys: `filesystem`, `github`, `google_sheets`, `weather`, `datetime`, `sqlite`, `excel`, `csv`, `pdf`, `archive`, `text`, `random`, `math`, `linalg`, `validate`, `image`, `chart`, `qr`, `barcode`, `translate`, `equation`, `currency`, `units`, `holidays`.
 
+#### Authentication (optional)
+
+If the container is reachable from anywhere beyond localhost, set `MCP_API_KEY` — every HTTP request to `/mcp` without an `Authorization: Bearer <MCP_API_KEY>` header is then rejected with 401. Without this variable the server behaves as before, with no authentication (convenient for local development).
+
+```bash
+MCP_API_KEY=your-secret-key docker compose up --build
+```
+
 #### Connecting an MCP client
 
 - **Claude Desktop / Claude Code / Cursor and other MCP clients**: point your client's MCP server configuration at the HTTP endpoint `http://localhost:8000/mcp`.
