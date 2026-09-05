@@ -55,7 +55,7 @@ class TestBuildGateway:
         assert "weather_get_weather" in names
         assert "qr_generate_qr_code" in names
         assert len(names) >= 130
-        assert len(SERVER_REGISTRY) == 24
+        assert len(SERVER_REGISTRY) == 25
 
     async def test_subset_selection(self, monkeypatch: pytest.MonkeyPatch) -> None:
         from src.gateway import build_gateway

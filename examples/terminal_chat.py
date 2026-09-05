@@ -275,6 +275,12 @@ def _map_tool_name(name: str) -> str:
         "is_public_holiday": "holidays__is_public_holiday",
         "get_next_holidays": "holidays__get_next_holidays",
         "list_holiday_countries": "holidays__list_holiday_countries",
+        "hex_to_rgb": "color__hex_to_rgb",
+        "rgb_to_hex": "color__rgb_to_hex",
+        "hex_to_hsl": "color__hex_to_hsl",
+        "get_contrast_color": "color__get_contrast_color",
+        "lighten_color": "color__lighten_color",
+        "darken_color": "color__darken_color",
     }
     return mapping.get(name, name)
 
@@ -1036,6 +1042,39 @@ async def run_async() -> None:
         "holidays__list_holiday_countries",
         "List countries with holiday data",
         list_holiday_countries,
+    )
+
+    # Register Color tools
+    from servers.color_server import (
+        darken_color,
+        get_contrast_color,
+        hex_to_hsl,
+        hex_to_rgb,
+        lighten_color,
+        rgb_to_hex,
+    )
+
+    manager.register_tool(
+        "color__hex_to_rgb", "Convert a hex color to RGB. Args: hex_color", hex_to_rgb
+    )
+    manager.register_tool(
+        "color__rgb_to_hex", "Convert RGB to a hex color. Args: r, g, b", rgb_to_hex
+    )
+    manager.register_tool(
+        "color__hex_to_hsl", "Convert a hex color to HSL. Args: hex_color", hex_to_hsl
+    )
+    manager.register_tool(
+        "color__get_contrast_color",
+        "Pick black or white text for readability on a background. Args: hex_color",
+        get_contrast_color,
+    )
+    manager.register_tool(
+        "color__lighten_color",
+        "Lighten a color. Args: hex_color, amount (0-100)",
+        lighten_color,
+    )
+    manager.register_tool(
+        "color__darken_color", "Darken a color. Args: hex_color, amount (0-100)", darken_color
     )
 
     all_tools = manager.get_tools_for_openai()
