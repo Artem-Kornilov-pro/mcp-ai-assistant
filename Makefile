@@ -1,4 +1,4 @@
-.PHONY: install test lint format type-check run run-chat docker-build docker-run clean
+.PHONY: install test lint format type-check run run-chat docker-build docker-run docker-smoke-test clean
 
 install:
 	pip install -e ".[dev]"
@@ -27,6 +27,9 @@ docker-build:
 
 docker-run:
 	docker run --rm -p 8000:8000 --env-file .env mcp-ai-assistant
+
+docker-smoke-test:
+	python scripts/docker_smoke_test.py
 
 clean:
 	rm -rf __pycache__ .pytest_cache .mypy_cache .ruff_cache
