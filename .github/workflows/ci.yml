@@ -75,5 +75,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Build image
-        run: docker build -t mcp-ai-assistant .
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install smoke test dependencies
+        run: pip install httpx
+
+      - name: Build image and run e2e smoke test
+        run: python scripts/docker_smoke_test.py
