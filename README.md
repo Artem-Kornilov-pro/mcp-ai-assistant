@@ -34,7 +34,7 @@ MCP-клиент → HTTP / stdio → MCP-гейтвей (src/gateway.py) → в
 
 ---
 
-## 🛠 Возможности (134 инструмента)
+## 🛠 Возможности (140 инструментов)
 
 <details>
 <summary><strong>📁 Файловая система (4)</strong></summary>
@@ -286,6 +286,15 @@ MCP-клиент → HTTP / stdio → MCP-гейтвей (src/gateway.py) → в
 - 🎊 API date.nager.at — без токена, без регистрации
 </details>
 
+<details>
+<summary><strong>🎨 Цвет (6)</strong></summary>
+
+- **hex_to_rgb** / **rgb_to_hex** — конвертация HEX ↔ RGB
+- **hex_to_hsl** — конвертация HEX → HSL
+- **get_contrast_color** — чёрный или белый текст для читаемости на фоне (по WCAG)
+- **lighten_color** / **darken_color** — осветление/затемнение цвета на процент
+</details>
+
 ---
 
 ## 📸 Демонстрация
@@ -334,7 +343,7 @@ docker compose up --build
 MCP_SERVERS=weather,currency,qr docker compose up --build
 ```
 
-Доступные ключи: `filesystem`, `github`, `google_sheets`, `weather`, `datetime`, `sqlite`, `excel`, `csv`, `pdf`, `archive`, `text`, `random`, `math`, `linalg`, `validate`, `image`, `chart`, `qr`, `barcode`, `translate`, `equation`, `currency`, `units`, `holidays`.
+Доступные ключи: `filesystem`, `github`, `google_sheets`, `weather`, `datetime`, `sqlite`, `excel`, `csv`, `pdf`, `archive`, `text`, `random`, `math`, `linalg`, `validate`, `image`, `chart`, `qr`, `barcode`, `translate`, `equation`, `currency`, `units`, `holidays`, `color`.
 
 #### Авторизация (опционально)
 
@@ -403,7 +412,8 @@ mcp-ai-assistant/
 │   ├── equation_server.py   # Уравнения и неравенства (5)
 │   ├── currency_server.py   # Валюты (3)
 │   ├── units_server.py      # Единицы измерения (5)
-│   └── holidays_server.py   # Праздники (4)
+│   ├── holidays_server.py   # Праздники (4)
+│   └── color_server.py      # Цвет (6)
 ├── examples/
 │   └── terminal_chat.py     # Пример клиента: терминальный AI-ассистент
 ├── tests/
@@ -426,7 +436,7 @@ mcp-ai-assistant/
 ## 🧪 Тестирование и качество кода
 
 ```bash
-make test         # pytest с покрытием (300+ тестов)
+make test         # pytest с покрытием (325+ тестов)
 make lint         # ruff check + format check
 make type-check   # mypy strict mode
 make docker-build # сборка Docker-образа
@@ -460,6 +470,7 @@ make docker-build # сборка Docker-образа
 | Валюты | exchangerate-api.com |
 | Единицы измерения | стандартная библиотека |
 | Праздники | date.nager.at |
+| Цвет | стандартная библиотека |
 | Тестирование | pytest, pytest-cov, pytest-asyncio |
 | Линтер | ruff |
 | Типизация | mypy (strict mode) |

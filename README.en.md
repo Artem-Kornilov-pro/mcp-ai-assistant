@@ -34,7 +34,7 @@ MCP client → HTTP / stdio → MCP gateway (src/gateway.py) → selected server
 
 ---
 
-## 🛠 Capabilities (134 tools)
+## 🛠 Capabilities (140 tools)
 
 <details>
 <summary><strong>📁 File system (4)</strong></summary>
@@ -286,6 +286,15 @@ MCP client → HTTP / stdio → MCP gateway (src/gateway.py) → selected server
 - 🎊 date.nager.at API — no token, no registration
 </details>
 
+<details>
+<summary><strong>🎨 Color (6)</strong></summary>
+
+- **hex_to_rgb** / **rgb_to_hex** — HEX ↔ RGB conversion
+- **hex_to_hsl** — HEX → HSL conversion
+- **get_contrast_color** — pick black or white text for readability on a background (WCAG)
+- **lighten_color** / **darken_color** — lighten/darken a color by a percentage
+</details>
+
 ---
 
 ## 📸 Demo
@@ -334,7 +343,7 @@ The server comes up at `http://localhost:8000/mcp` (Streamable HTTP transport). 
 MCP_SERVERS=weather,currency,qr docker compose up --build
 ```
 
-Available keys: `filesystem`, `github`, `google_sheets`, `weather`, `datetime`, `sqlite`, `excel`, `csv`, `pdf`, `archive`, `text`, `random`, `math`, `linalg`, `validate`, `image`, `chart`, `qr`, `barcode`, `translate`, `equation`, `currency`, `units`, `holidays`.
+Available keys: `filesystem`, `github`, `google_sheets`, `weather`, `datetime`, `sqlite`, `excel`, `csv`, `pdf`, `archive`, `text`, `random`, `math`, `linalg`, `validate`, `image`, `chart`, `qr`, `barcode`, `translate`, `equation`, `currency`, `units`, `holidays`, `color`.
 
 #### Authentication (optional)
 
@@ -403,7 +412,8 @@ mcp-ai-assistant/
 │   ├── equation_server.py    # Equations & inequalities (5)
 │   ├── currency_server.py    # Currency (3)
 │   ├── units_server.py       # Units (5)
-│   └── holidays_server.py    # Holidays (4)
+│   ├── holidays_server.py    # Holidays (4)
+│   └── color_server.py       # Color (6)
 ├── examples/
 │   └── terminal_chat.py      # Example client: terminal AI assistant
 ├── tests/
@@ -426,7 +436,7 @@ mcp-ai-assistant/
 ## 🧪 Testing and code quality
 
 ```bash
-make test         # pytest with coverage (300+ tests)
+make test         # pytest with coverage (325+ tests)
 make lint         # ruff check + format check
 make type-check   # mypy strict mode
 make docker-build # build the Docker image
@@ -460,6 +470,7 @@ make docker-build # build the Docker image
 | Currency | exchangerate-api.com |
 | Units | standard library |
 | Holidays | date.nager.at |
+| Color | standard library |
 | Testing | pytest, pytest-cov, pytest-asyncio |
 | Linter | ruff |
 | Typing | mypy (strict mode) |

@@ -39,6 +39,7 @@ SERVER_REGISTRY: dict[str, str] = {
     "currency": "servers.currency_server",
     "units": "servers.units_server",
     "holidays": "servers.holidays_server",
+    "color": "servers.color_server",
 }
 
 
